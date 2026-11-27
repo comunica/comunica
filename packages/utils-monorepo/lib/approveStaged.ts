@@ -1,41 +1,24 @@
 // eslint-disable-next-line import/no-nodejs-modules
-import { spawn } from 'node:child_process';
-
-// eslint-disable-next-line import/no-nodejs-modules
-import { createInterface } from 'node:readline';
-
-// eslint-disable-next-line import/no-nodejs-modules
 import { parseArgs } from 'node:util';
-import semver from 'semver';
-
-// eslint-disable-next-line ts/no-var-requires,ts/no-require-imports
-const { getPackages } = require('@manypkg/get-packages');
-
-/**
- * The first npm version that has the `npm stage` commands.
- */
-export const MIN_NPM_VERSION = '11.15.0';
+import type { IStagedVersion, NpmRunner } from './npmCli';
+import {
+  assertNpmStageSupport,
+  getPublicPackages,
+  isOtpError,
+  isOtpRateLimitError,
+  isRateLimitError,
+  listStaged,
+  npmErrorMessage,
+  parseConcurrency,
+  promptTerminal,
+  RateLimitBackoff,
+  runNpm,
+} from './npmCli';
 
 /**
  * How many times a single approval is retried with a new OTP.
  */
 export const MAX_OTP_ATTEMPTS = 3;
-
-/**
- * A staged package version, as listed by `npm stage list --json`.
- */
-export interface IStagedVersion {
-  id: string;
-  packageName: string;
-  version: string;
-  status?: string;
-}
-
-export interface INpmResult {
-  code: number | null;
-  stdout: string;
-  stderr: string;
-}
 
 export interface IApproveStagedOptions {
   /**
@@ -54,113 +37,33 @@ export interface IApproveStagedOptions {
    * Skip the confirmation prompt.
    */
   yes: boolean;
-  npm: (args: string[]) => Promise<INpmResult>;
+  npm: NpmRunner;
   prompt: (question: string) => Promise<string>;
   log: (message: string) => void;
-}
-
-/**
- * Run an npm command and capture its output.
- * Stdin is ignored, so npm fails with EOTP instead of prompting by itself.
- * @param args The npm arguments.
- */
-export function runNpm(args: string[]): Promise<INpmResult> {
-  return new Promise((resolve, reject) => {
-    const child = spawn('npm', args, { stdio: [ 'ignore', 'pipe', 'pipe' ]});
-    let stdout = '';
-    let stderr = '';
-    child.stdout.on('data', (data) => {
-      stdout += data;
-    });
-    child.stderr.on('data', (data) => {
-      stderr += data;
-    });
-    child.on('error', reject);
-    child.on('close', code => resolve({ code, stdout, stderr }));
-  });
-}
-
-/**
- * Ask a question on the terminal.
- * Rejects if the terminal is closed before answering, such as with Ctrl+C.
- * @param question The question.
- * @return The trimmed answer.
- */
-export function promptTerminal(question: string): Promise<string> {
-  const readline = createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise((resolve, reject) => {
-    readline.on('close', () => reject(new Error('Aborted')));
-    readline.question(question, (answer) => {
-      resolve(answer.trim());
-      readline.close();
-    });
-  });
-}
-
-/**
- * Extract the error message from npm's stderr output.
- * @param stderr The stderr output of an npm command.
- */
-export function npmErrorMessage(stderr: string): string {
-  const lines = stderr.split('\n')
-    .filter(line => line.startsWith('npm error '))
-    .map(line => line.slice('npm error '.length))
-    .filter(line => !line.startsWith('A complete log of this run'));
-  return lines.length > 0 ? lines.join(' ') : stderr.trim();
-}
-
-/**
- * Check if npm failed because the registry is rate limiting.
- * @param stderr The stderr output of an npm command.
- */
-export function isRateLimitError(stderr: string): boolean {
-  return /\bE429\b|rate limit/iu.test(stderr);
-}
-
-/**
- * Check if npm failed because of a missing, invalid or expired OTP.
- * @param stderr The stderr output of an npm command.
- */
-export function isOtpError(stderr: string): boolean {
-  return /\bEOTP\b|one-time pass/iu.test(stderr);
-}
-
-/**
- * Get the names of all non-private packages in the given monorepo.
- * @param cwd The monorepo directory.
- */
-export async function getPublicPackageNames(cwd: string): Promise<Set<string>> {
-  const { packages } = await getPackages(cwd);
-  return new Set(packages
-    .filter((pkg: any) => !pkg.packageJson.private)
-    .map((pkg: any) => pkg.packageJson.name));
+  backoff: RateLimitBackoff;
 }
 
 /**
  * Approve all staged versions of the packages in a monorepo.
- * One OTP is reused until npm rejects it, after which a new one is requested.
+ *
+ * Dependencies are approved before their dependents, and dependents of a version that could not be approved are
+ * skipped, so a published package never depends on a version that is still staged.
+ * One OTP is reused until npm rejects it. Then no new approvals start until a new OTP is entered, to avoid failed
+ * attempts that make npm temporarily refuse OTPs, in which case this stops.
+ * When npm rate limits otherwise, all approvals pause and are retried afterwards.
  * @param options The options.
  * @return If all staged versions were approved.
  */
 export async function approveStaged(options: IApproveStagedOptions): Promise<boolean> {
-  const { npm, prompt, log } = options;
+  const { npm, prompt, backoff } = options;
 
-  const versionResult = await npm([ '--version' ]);
-  const npmVersion = versionResult.stdout.trim();
-  if (!semver.valid(npmVersion) || semver.lt(npmVersion, MIN_NPM_VERSION)) {
-    throw new Error(`Approving staged versions requires npm ${MIN_NPM_VERSION} or later, but found "${npmVersion}". Upgrade with: npm install -g npm@latest`);
-  }
-
-  const packageNames = await getPublicPackageNames(options.cwd);
-  const listResult = await npm([ 'stage', 'list', '--json' ]);
-  if (listResult.code !== 0) {
-    throw new Error(`Failed to list staged versions: ${npmErrorMessage(listResult.stderr)}`);
-  }
-  const staged: IStagedVersion[] = (<IStagedVersion[]> JSON.parse(listResult.stdout))
-    .filter(item => packageNames.has(item.packageName) &&
+  await assertNpmStageSupport(npm);
+  const packages = new Map((await getPublicPackages(options.cwd)).map(pkg => [ pkg.name, pkg ]));
+  const staged = (await listStaged(npm))
+    .filter(item => packages.has(item.packageName) &&
       (options.version === undefined || item.version === options.version));
   if (staged.length === 0) {
-    log('No staged versions found for the packages in this monorepo.');
+    options.log('No staged versions found for the packages in this monorepo.');
     return true;
   }
 
@@ -173,74 +76,159 @@ export async function approveStaged(options: IApproveStagedOptions): Promise<boo
     const status = item.status ?? 'unknown';
     statusCounts[status] = (statusCounts[status] ?? 0) + 1;
   }
-  log(`Found ${staged.length} staged packages at version ${versions[0]} (status: ${Object.entries(statusCounts)
+  options.log(`Found ${staged.length} staged packages at version ${versions[0]} (status: ${Object.entries(statusCounts)
     .map(([ status, count ]) => `${count} ${status}`).join(', ')}).`);
 
   if (!options.yes && !/^y(?:es)?$/iu.test(await prompt(`Approve all ${staged.length}? [y/N] `))) {
-    log('Aborted.');
+    options.log('Aborted.');
     return true;
   }
 
   let otp = await prompt('Enter OTP: ');
   let otpRequest: Promise<string> | undefined;
+  // Messages are held back while asking for a new OTP, so they don't hide the prompt.
+  const heldBack: string[] = [];
+  const log = (message: string): void => {
+    if (otpRequest) {
+      heldBack.push(message);
+    } else {
+      options.log(message);
+    }
+  };
   // Ask for a new OTP once, even if several parallel approvals fail with the same expired OTP.
-  const renewOtp = async(usedOtp: string): Promise<string> => {
+  const renewOtp = async(usedOtp: string): Promise<void> => {
     if (otp !== usedOtp) {
-      return otp;
+      return;
     }
     if (!otpRequest) {
-      otpRequest = prompt('The OTP was rejected or expired. Enter a new OTP: ').then((newOtp) => {
-        otp = newOtp;
-        otpRequest = undefined;
-        return newOtp;
-      });
+      otpRequest = prompt('The OTP was rejected or expired, so approvals are paused. Enter a new OTP: ')
+        .then((newOtp) => {
+          otp = newOtp;
+          return newOtp;
+        })
+        .finally(() => {
+          otpRequest = undefined;
+          for (const message of heldBack.splice(0)) {
+            options.log(message);
+          }
+        });
     }
-    return otpRequest;
+    await otpRequest;
   };
 
-  const queue = [ ...staged ];
+  const byName = new Map(staged.map(item => [ item.packageName, item ]));
+  const stagedDependencies = new Map(staged.map(item => [
+    item.packageName,
+    packages.get(item.packageName)!.dependencies.filter(dependency => byName.has(dependency)),
+  ]));
+  const pending = new Set(byName.keys());
+  const approvedNames = new Set<string>();
   const failures: string[] = [];
   let approved = 0;
-  let rateLimited = false;
+  let inFlight = 0;
+  let otpLockout: string | undefined;
+  const waiters: (() => void)[] = [];
 
-  const approve = async(item: IStagedVersion): Promise<void> => {
+  // Take a version of which all staged dependencies are approved.
+  const takeNext = (): IStagedVersion | undefined => {
+    for (const name of pending) {
+      if (stagedDependencies.get(name)!.every(dependency => approvedNames.has(dependency))) {
+        pending.delete(name);
+        return byName.get(name);
+      }
+    }
+    // Only a dependency cycle can block all remaining versions while nothing is being approved.
+    if (inFlight === 0) {
+      const [ name ] = pending;
+      pending.delete(name);
+      return byName.get(name);
+    }
+  };
+
+  const skipDependents = (name: string): void => {
+    for (const other of pending) {
+      if (stagedDependencies.get(other)!.includes(name)) {
+        pending.delete(other);
+        failures.push(`${other}@${versions[0]}: skipped, because ${name} was not approved`);
+        skipDependents(other);
+      }
+    }
+  };
+
+  const approve = async(item: IStagedVersion): Promise<'approved' | 'failed' | 'stopped'> => {
     const label = `${item.packageName}@${item.version}`;
-    for (let attempt = 1; ; attempt++) {
+    let otpAttempts = 0;
+    while (true) {
+      await backoff.waitIfPaused();
+      if (otpRequest) {
+        await otpRequest;
+        continue;
+      }
+      if (otpLockout) {
+        return 'stopped';
+      }
       const usedOtp = otp;
       const result = await npm([ 'stage', 'approve', item.id, `--otp=${usedOtp}` ]);
       if (result.code === 0) {
+        backoff.success();
         approved++;
         log(`[${approved}/${staged.length}] Approved ${label}`);
-        return;
+        return 'approved';
+      }
+      const message = npmErrorMessage(result.stderr);
+      if (isOtpRateLimitError(result.stderr)) {
+        otpLockout ??= message;
+        return 'stopped';
       }
       if (isRateLimitError(result.stderr)) {
-        rateLimited = true;
-      } else if (isOtpError(result.stderr) && attempt < MAX_OTP_ATTEMPTS) {
+        const delay = backoff.hit();
+        if (delay !== undefined) {
+          log(`npm is rate limiting (${message}), so waiting ${delay / 1000}s before continuing (${approved}/${staged.length} approved).`);
+        }
+        continue;
+      }
+      if (isOtpError(result.stderr) && ++otpAttempts < MAX_OTP_ATTEMPTS) {
         await renewOtp(usedOtp);
         continue;
       }
-      failures.push(`${label}: ${npmErrorMessage(result.stderr)}`);
-      return;
+      failures.push(`${label}: ${message}`);
+      return 'failed';
     }
   };
 
   await Promise.all(Array.from({ length: options.concurrency }, async() => {
-    while (queue.length > 0) {
-      if (rateLimited) {
+    while (pending.size > 0) {
+      if (otpLockout) {
         return;
       }
-      await approve(queue.shift()!);
+      const item = takeNext();
+      if (!item) {
+        await new Promise<void>(resolve => waiters.push(resolve));
+        continue;
+      }
+      inFlight++;
+      const outcome = await approve(item);
+      inFlight--;
+      if (outcome === 'approved') {
+        approvedNames.add(item.packageName);
+      } else if (outcome === 'failed') {
+        skipDependents(item.packageName);
+      }
+      for (const wake of waiters.splice(0)) {
+        wake();
+      }
     }
   }));
 
-  log(`Approved ${approved} of ${staged.length} staged versions.`);
+  options.log(`Approved ${approved} of ${staged.length} staged versions.`);
   if (failures.length > 0) {
-    log(`Failed to approve ${failures.length}:\n${failures.map(failure => `  ${failure}`).join('\n')}`);
+    options.log(`Failed to approve ${failures.length}:\n${failures.map(failure => `  ${failure}`).join('\n')}`);
   }
-  if (rateLimited) {
-    log(`npm is rate limiting, so ${queue.length} were not attempted. Wait a while and run this again.`);
+  if (otpLockout) {
+    const remaining = staged.length - approved - failures.length;
+    options.log(`Stopped, because npm temporarily refuses one-time passwords (${otpLockout}). Wait a while, then approve the remaining ${remaining} on npmjs.com or by running this again.`);
   }
-  return failures.length === 0;
+  return failures.length === 0 && !otpLockout;
 }
 
 /**
@@ -254,22 +242,20 @@ export async function approveStagedCli(argv: string[], cwd: string): Promise<boo
     args: argv,
     options: {
       version: { type: 'string' },
-      concurrency: { type: 'string', default: '4' },
+      // Each parallel approval fails once when an OTP expires, and too many failures make npm refuse OTPs.
+      concurrency: { type: 'string', default: '2' },
       yes: { type: 'boolean', short: 'y', default: false },
     },
   });
-  const concurrency = Number(values.concurrency);
-  if (!Number.isInteger(concurrency) || concurrency < 1) {
-    throw new Error(`--concurrency must be a positive integer, but got "${values.concurrency}"`);
-  }
   return approveStaged({
     cwd,
     version: values.version,
-    concurrency,
+    concurrency: parseConcurrency(values.concurrency),
     yes: values.yes,
     npm: runNpm,
     prompt: promptTerminal,
     // eslint-disable-next-line no-console
     log: message => console.log(message),
+    backoff: new RateLimitBackoff(30_000, 300_000),
   });
 }

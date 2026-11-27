@@ -1,31 +1,40 @@
 import { spawn } from 'node:child_process';
 import { EventEmitter } from 'node:events';
 import { createInterface } from 'node:readline';
-import type { IApproveStagedOptions, INpmResult, IStagedVersion } from '../lib/approveStaged';
-import {
-  approveStaged,
-  approveStagedCli,
-  getPublicPackageNames,
-  isOtpError,
-  isRateLimitError,
-  MAX_OTP_ATTEMPTS,
-  npmErrorMessage,
-  promptTerminal,
-  runNpm,
-} from '../lib/approveStaged';
+import type { IApproveStagedOptions } from '../lib/approveStaged';
+import { approveStaged, approveStagedCli, MAX_OTP_ATTEMPTS } from '../lib/approveStaged';
+import type { INpmResult, IStagedVersion } from '../lib/npmCli';
+import { RateLimitBackoff } from '../lib/npmCli';
 
 jest.mock<typeof import('node:child_process')>('node:child_process', () => <any> ({ spawn: jest.fn() }));
 jest.mock<typeof import('node:readline')>('node:readline', () => <any> ({
   createInterface: jest.fn(),
 }));
+/**
+ * A package in the monorepo, as returned by @manypkg/get-packages.
+ * @param name The package name without scope.
+ * @param dependencies The names of its dependencies.
+ */
+function pkg(name: string, dependencies: string[] = []): any {
+  return {
+    dir: `/repo/packages/${name}`,
+    packageJson: {
+      name: `@comunica/${name}`,
+      version: '1.0.0',
+      dependencies: Object.fromEntries(dependencies.map(dependency => [ dependency, '^1.0.0' ])),
+    },
+  };
+}
+
+const DEFAULT_PACKAGES = [
+  pkg('a'),
+  pkg('b'),
+  pkg('c'),
+  { dir: '/repo/packages/private', packageJson: { name: '@comunica/private', version: '1.0.0', private: true }},
+];
+let mockPackages: any[] = DEFAULT_PACKAGES;
 jest.mock<{ getPackages: () => Promise<any> }>('@manypkg/get-packages', () => ({
-  getPackages: jest.fn(async() => ({
-    packages: [
-      { packageJson: { name: '@comunica/a' }},
-      { packageJson: { name: '@comunica/b' }},
-      { packageJson: { name: '@comunica/private', private: true }},
-    ],
-  })),
+  getPackages: jest.fn(async() => ({ packages: mockPackages })),
 }));
 
 const OK: INpmResult = { code: 0, stdout: '', stderr: '' };
@@ -34,8 +43,33 @@ const EOTP: INpmResult = {
   stdout: '',
   stderr: 'npm error code EOTP\nnpm error This operation requires a one-time password.\n',
 };
-const E429: INpmResult = { code: 1, stdout: '', stderr: 'npm error code E429\nnpm error rate limited otp\n' };
+const E429: INpmResult = { code: 1, stdout: '', stderr: 'npm error code E429\nnpm error 429 Too Many Requests\n' };
 const E404: INpmResult = { code: 1, stdout: '', stderr: 'npm error code E404\nnpm error Not found\n' };
+const LOCKOUT: INpmResult = {
+  code: 1,
+  stdout: '',
+  stderr: 'npm error code E429\nnpm error 429 Too Many Requests - Could not authenticate x: rate limited otp\n',
+};
+
+function deferred<T>(): { promise: Promise<T>; resolve: (value: T) => void; reject: (error: Error) => void } {
+  let resolve!: (value: T) => void;
+  let reject!: (error: Error) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
+async function flush(): Promise<void> {
+  for (let i = 0; i < 5; i++) {
+    await new Promise(resolve => setImmediate(resolve));
+  }
+}
+
+function approveCalls(npm: jest.Mock): string[] {
+  return npm.mock.calls.filter(([ args ]) => args[1] === 'approve').map(([ args ]) => `${args[2]} ${args[3]}`);
+}
 
 function staged(packageName: string, version = '1.0.0'): IStagedVersion {
   return { id: `id-${packageName}-${version}`, packageName, version, status: 'pending' };
@@ -64,123 +98,35 @@ function fakeNpm(
 describe('approveStaged', () => {
   let log: jest.Mock;
   let prompt: jest.Mock;
+  let clock: number;
+  let wait: jest.Mock;
 
   function options(npm: IApproveStagedOptions['npm'], overrides: Partial<IApproveStagedOptions> = {}):
   IApproveStagedOptions {
-    return { cwd: '/repo', concurrency: 1, yes: true, npm, prompt, log, ...overrides };
+    const backoff = new RateLimitBackoff(1000, 4000, wait, () => clock);
+    return { cwd: '/repo', concurrency: 1, yes: true, npm, prompt, log, backoff, ...overrides };
   }
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockPackages = DEFAULT_PACKAGES;
     log = jest.fn();
     prompt = jest.fn(async() => '111111');
-  });
-
-  describe('npmErrorMessage', () => {
-    it('should join npm error lines without the log file line', () => {
-      const stderr = 'npm warn x\nnpm error code E404\nnpm error Not found\n' +
-        'npm error A complete log of this run can be found in: x\n';
-      expect(npmErrorMessage(stderr)).toBe('code E404 Not found');
-    });
-
-    it('should fall back to the full stderr', () => {
-      expect(npmErrorMessage('  something broke \n')).toBe('something broke');
-    });
-  });
-
-  describe('isRateLimitError', () => {
-    it('should detect rate limiting', () => {
-      expect(isRateLimitError(E429.stderr)).toBe(true);
-      expect(isRateLimitError('Could not publish: rate limited exceeded')).toBe(true);
-      expect(isRateLimitError(EOTP.stderr)).toBe(false);
-    });
-  });
-
-  describe('isOtpError', () => {
-    it('should detect OTP errors', () => {
-      expect(isOtpError(EOTP.stderr)).toBe(true);
-      expect(isOtpError('npm error code E401\nnpm error This operation requires a one-time password')).toBe(true);
-      expect(isOtpError(E404.stderr)).toBe(false);
-    });
-  });
-
-  describe('runNpm', () => {
-    let child: any;
-
-    beforeEach(() => {
-      child = new EventEmitter();
-      child.stdout = new EventEmitter();
-      child.stderr = new EventEmitter();
-      jest.mocked(spawn).mockReturnValue(child);
-    });
-
-    it('should capture the output of npm without stdin', async() => {
-      const result = runNpm([ 'stage', 'list' ]);
-      child.stdout.emit('data', 'out1');
-      child.stdout.emit('data', 'out2');
-      child.stderr.emit('data', 'err');
-      child.emit('close', 1);
-      await expect(result).resolves.toEqual({ code: 1, stdout: 'out1out2', stderr: 'err' });
-      expect(spawn).toHaveBeenCalledWith('npm', [ 'stage', 'list' ], { stdio: [ 'ignore', 'pipe', 'pipe' ]});
-    });
-
-    it('should reject when npm cannot be started', async() => {
-      const result = runNpm([ '--version' ]);
-      child.emit('error', new Error('spawn npm ENOENT'));
-      await expect(result).rejects.toThrow('spawn npm ENOENT');
-    });
-  });
-
-  describe('promptTerminal', () => {
-    let readline: any;
-
-    beforeEach(() => {
-      readline = Object.assign(new EventEmitter(), {
-        question: jest.fn(),
-        close: jest.fn(() => readline.emit('close')),
-      });
-      jest.mocked(createInterface).mockReturnValue(readline);
-    });
-
-    it('should return the trimmed answer and close the interface', async() => {
-      readline.question
-        .mockImplementation((question: string, callback: (answer: string) => void) => callback(' 123456 '));
-      await expect(promptTerminal('Enter OTP: ')).resolves.toBe('123456');
-      expect(readline.question).toHaveBeenCalledWith('Enter OTP: ', expect.any(Function));
-      expect(readline.close).toHaveBeenCalledTimes(1);
-    });
-
-    it('should reject when the interface closes before an answer', async() => {
-      const answer = promptTerminal('Enter OTP: ');
-      readline.close();
-      await expect(answer).rejects.toThrow('Aborted');
-    });
-  });
-
-  describe('getPublicPackageNames', () => {
-    it('should return the names of non-private packages', async() => {
-      await expect(getPublicPackageNames('/repo')).resolves.toEqual(new Set([ '@comunica/a', '@comunica/b' ]));
+    clock = 0;
+    // Advance the fake clock on a later tick, like a real timer, so parallel requests see the same time.
+    wait = jest.fn((ms: number) => {
+      const target = clock + ms;
+      return new Promise<void>(resolve => setImmediate(() => {
+        clock = Math.max(clock, target);
+        resolve();
+      }));
     });
   });
 
   describe('approveStaged', () => {
     it('should reject npm versions without npm stage', async() => {
       const npm = jest.fn(async() => ({ code: 0, stdout: '11.14.9\n', stderr: '' }));
-      await expect(approveStaged(options(npm))).rejects
-        .toThrow('Approving staged versions requires npm 11.15.0 or later, but found "11.14.9"');
-    });
-
-    it('should reject when the npm version cannot be determined', async() => {
-      const npm = jest.fn(async() => ({ code: 1, stdout: '', stderr: 'npm: command not found' }));
-      await expect(approveStaged(options(npm))).rejects.toThrow('but found ""');
-    });
-
-    it('should throw when listing staged versions fails', async() => {
-      const npm = jest.fn(async(args: string[]) => args[0] === '--version' ?
-          { code: 0, stdout: '12.2.3', stderr: '' } :
-          { code: 1, stdout: '', stderr: 'npm error code E401\nnpm error Unauthorized\n' });
-      await expect(approveStaged(options(npm))).rejects
-        .toThrow('Failed to list staged versions: code E401 Unauthorized');
+      await expect(approveStaged(options(npm))).rejects.toThrow('npm stage requires npm 11.15.0 or later');
     });
 
     it('should do nothing without staged versions of monorepo packages', async() => {
@@ -239,7 +185,8 @@ describe('approveStaged', () => {
       );
       await expect(approveStaged(options(npm, { concurrency: 2 }))).resolves.toBe(true);
       expect(prompt).toHaveBeenCalledTimes(2);
-      expect(prompt).toHaveBeenNthCalledWith(2, 'The OTP was rejected or expired. Enter a new OTP: ');
+      expect(prompt)
+        .toHaveBeenNthCalledWith(2, 'The OTP was rejected or expired, so approvals are paused. Enter a new OTP: ');
       expect(log).toHaveBeenLastCalledWith('Approved 2 of 2 staged versions.');
     });
 
@@ -288,17 +235,145 @@ describe('approveStaged', () => {
   @comunica/a@1.0.0: code E404 Not found`);
     });
 
-    it('should stop when rate limited', async() => {
+    it('should wait and retry when rate limited', async() => {
+      let calls = 0;
+      const npm = fakeNpm([ staged('@comunica/a'), staged('@comunica/b') ], () => ++calls === 1 ? E429 : OK);
+      await expect(approveStaged(options(npm))).resolves.toBe(true);
+      expect(log).toHaveBeenCalledWith('npm is rate limiting (code E429 429 Too Many Requests), ' +
+        'so waiting 1s before continuing (0/2 approved).');
+      expect(wait).toHaveBeenCalledWith(1000);
+      expect(log).toHaveBeenLastCalledWith('Approved 2 of 2 staged versions.');
+    });
+
+    it('should pause once when parallel approvals are rate limited', async() => {
+      let calls = 0;
+      const npm = fakeNpm([ staged('@comunica/a'), staged('@comunica/b') ], () => ++calls <= 2 ? E429 : OK);
+      await expect(approveStaged(options(npm, { concurrency: 2 }))).resolves.toBe(true);
+      expect(log.mock.calls.filter(([ message ]) => message.startsWith('npm is rate limiting'))).toHaveLength(1);
+      expect(log).toHaveBeenLastCalledWith('Approved 2 of 2 staged versions.');
+    });
+
+    it('should approve dependencies before their dependents', async() => {
+      mockPackages = [
+        pkg('a', [ 'rdf-data-factory' ]),
+        pkg('b', [ '@comunica/a' ]),
+        pkg('c', [ '@comunica/b' ]),
+        pkg('d'),
+      ];
+      const slowA = deferred<INpmResult>();
       const npm = fakeNpm(
-        [ staged('@comunica/a'), staged('@comunica/b') ],
-        () => E429,
+        [ staged('@comunica/c'), staged('@comunica/b'), staged('@comunica/a'), staged('@comunica/d') ],
+        id => id === 'id-@comunica/a-1.0.0' ? slowA.promise : OK,
+      );
+      const result = approveStaged(options(npm, { concurrency: 2 }));
+      await flush();
+      // Only the versions without staged dependencies start, and b waits for a.
+      expect(approveCalls(npm)).toEqual([ 'id-@comunica/a-1.0.0 --otp=111111', 'id-@comunica/d-1.0.0 --otp=111111' ]);
+      slowA.resolve(OK);
+      await expect(result).resolves.toBe(true);
+      expect(approveCalls(npm)).toEqual([
+        'id-@comunica/a-1.0.0 --otp=111111',
+        'id-@comunica/d-1.0.0 --otp=111111',
+        'id-@comunica/b-1.0.0 --otp=111111',
+        'id-@comunica/c-1.0.0 --otp=111111',
+      ]);
+    });
+
+    it('should skip the dependents of versions that could not be approved', async() => {
+      mockPackages = [ pkg('a'), pkg('b', [ '@comunica/a' ]), pkg('c', [ '@comunica/b' ]), pkg('d') ];
+      const npm = fakeNpm(
+        [ staged('@comunica/a'), staged('@comunica/b'), staged('@comunica/c'), staged('@comunica/d') ],
+        id => id === 'id-@comunica/a-1.0.0' ? E404 : OK,
       );
       await expect(approveStaged(options(npm))).resolves.toBe(false);
-      expect(npm).toHaveBeenCalledTimes(3);
-      expect(log).toHaveBeenCalledWith(`Failed to approve 1:
-  @comunica/a@1.0.0: code E429 rate limited otp`);
-      expect(log)
-        .toHaveBeenLastCalledWith('npm is rate limiting, so 1 were not attempted. Wait a while and run this again.');
+      expect(approveCalls(npm)).toEqual([ 'id-@comunica/a-1.0.0 --otp=111111', 'id-@comunica/d-1.0.0 --otp=111111' ]);
+      expect(log).toHaveBeenLastCalledWith(`Failed to approve 3:
+  @comunica/a@1.0.0: code E404 Not found
+  @comunica/b@1.0.0: skipped, because @comunica/a was not approved
+  @comunica/c@1.0.0: skipped, because @comunica/b was not approved`);
+    });
+
+    it('should approve versions with cyclic dependencies', async() => {
+      mockPackages = [ pkg('a', [ '@comunica/b' ]), pkg('b', [ '@comunica/a' ]) ];
+      const npm = fakeNpm([ staged('@comunica/a'), staged('@comunica/b') ]);
+      await expect(approveStaged(options(npm, { concurrency: 2 }))).resolves.toBe(true);
+      expect(approveCalls(npm)).toEqual([ 'id-@comunica/a-1.0.0 --otp=111111', 'id-@comunica/b-1.0.0 --otp=111111' ]);
+    });
+
+    it('should stop when npm refuses OTPs', async() => {
+      const npm = fakeNpm([ staged('@comunica/a'), staged('@comunica/b') ], () => LOCKOUT);
+      await expect(approveStaged(options(npm))).resolves.toBe(false);
+      expect(approveCalls(npm)).toHaveLength(1);
+      expect(log).toHaveBeenCalledWith('Approved 0 of 2 staged versions.');
+      expect(log).toHaveBeenLastCalledWith('Stopped, because npm temporarily refuses one-time passwords ' +
+        '(code E429 429 Too Many Requests - Could not authenticate x: rate limited otp). ' +
+        'Wait a while, then approve the remaining 2 on npmjs.com or by running this again.');
+    });
+
+    it('should stop parallel approvals when npm refuses OTPs', async() => {
+      const npm = fakeNpm([ staged('@comunica/a'), staged('@comunica/b'), staged('@comunica/c') ], () => LOCKOUT);
+      await expect(approveStaged(options(npm, { concurrency: 2 }))).resolves.toBe(false);
+      expect(approveCalls(npm)).toHaveLength(2);
+      expect(log).toHaveBeenLastCalledWith(expect.stringContaining('approve the remaining 3'));
+    });
+
+    it('should not retry a rate limited approval after npm refuses OTPs', async() => {
+      let calls = 0;
+      const npm = fakeNpm(
+        [ staged('@comunica/a'), staged('@comunica/b') ],
+        id => id === 'id-@comunica/b-1.0.0' ? LOCKOUT : ++calls === 1 ? E429 : OK,
+      );
+      await expect(approveStaged(options(npm, { concurrency: 2 }))).resolves.toBe(false);
+      expect(approveCalls(npm)).toHaveLength(2);
+      expect(log).toHaveBeenLastCalledWith(expect.stringContaining('approve the remaining 2'));
+    });
+
+    it('should not start approvals and hold back messages while asking for a new OTP', async() => {
+      const newOtp = deferred<string>();
+      prompt.mockResolvedValueOnce('111111').mockReturnValueOnce(newOtp.promise);
+      const slowB = deferred<INpmResult>();
+      const npm = fakeNpm(
+        [ staged('@comunica/a'), staged('@comunica/b'), staged('@comunica/c') ],
+        (id, otp) => otp === '222222' ? OK : id === 'id-@comunica/b-1.0.0' ? slowB.promise : EOTP,
+      );
+      const result = approveStaged(options(npm, { concurrency: 2 }));
+      await flush();
+      expect(prompt).toHaveBeenCalledTimes(2);
+      // The approval of b finishes while the prompt is open: its message waits, and c doesn't start with the old OTP.
+      slowB.resolve(OK);
+      await flush();
+      expect(log).not.toHaveBeenCalledWith('[1/3] Approved @comunica/b@1.0.0');
+      expect(approveCalls(npm)).not.toContain('id-@comunica/c-1.0.0 --otp=111111');
+      newOtp.resolve('222222');
+      await expect(result).resolves.toBe(true);
+      expect(log).toHaveBeenCalledWith('[1/3] Approved @comunica/b@1.0.0');
+      expect(approveCalls(npm)).toContain('id-@comunica/c-1.0.0 --otp=222222');
+      expect(log).toHaveBeenLastCalledWith('Approved 3 of 3 staged versions.');
+    });
+
+    it('should show held back messages when the OTP prompt is aborted', async() => {
+      const newOtp = deferred<string>();
+      prompt.mockResolvedValueOnce('111111').mockReturnValueOnce(newOtp.promise);
+      const slowB = deferred<INpmResult>();
+      const npm = fakeNpm(
+        [ staged('@comunica/a'), staged('@comunica/b') ],
+        id => id === 'id-@comunica/b-1.0.0' ? slowB.promise : EOTP,
+      );
+      const result = approveStaged(options(npm, { concurrency: 2 }));
+      await flush();
+      slowB.resolve(OK);
+      await flush();
+      newOtp.reject(new Error('Aborted'));
+      await expect(result).rejects.toThrow('Aborted');
+      expect(log).toHaveBeenLastCalledWith('[1/2] Approved @comunica/b@1.0.0');
+    });
+
+    it('should not count rate limits as OTP attempts', async() => {
+      let calls = 0;
+      const npm = fakeNpm([ staged('@comunica/a') ], () => ++calls <= MAX_OTP_ATTEMPTS ? E429 : OK);
+      await expect(approveStaged(options(npm))).resolves.toBe(true);
+      expect(prompt).toHaveBeenCalledTimes(1);
+      expect(log).toHaveBeenLastCalledWith('Approved 1 of 1 staged versions.');
     });
   });
 
