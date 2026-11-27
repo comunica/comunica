@@ -1,0 +1,17 @@
+{
+  "name": "benchmark-bsbm-file-update",
+  "version": "5.5.0",
+  "private": true,
+  "scripts": {
+    "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",
+    "validate": "jbr validate",
+    "performance": "jbr prepare && jbr run && psbr csv bsbm --useCase exploreAndUpdate combinations/combination_*/output && psbr tex query combinations/combination_*/output --svg --logY",
+    "performance:ci": "jbr prepare -c 0 && jbr run -c 0 && psbr csv bsbm --useCase exploreAndUpdate combinations/combination_0/output"
+  },
+  "dependencies": {
+    "@jbr-experiment/bsbm": "^6.8.0",
+    "@jbr-hook/cli": "^6.0.0",
+    "cross-env": "^7.0.3",
+    "jbr": "^6.0.0"
+  }
+}

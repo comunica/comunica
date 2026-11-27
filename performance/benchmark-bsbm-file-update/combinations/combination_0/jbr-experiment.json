@@ -1,0 +1,18 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/bsbm/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^6.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-bsbm-file-update:combination_0",
+  "@type": "ExperimentBsbm",
+  "productCount": 1000,
+  "generateHdt": false,
+  "endpointUrl": "http://host.docker.internal:3001/sparql",
+  "endpointUrlExternal": "http://localhost:3001/sparql",
+  "warmupRuns": 5,
+  "runs": 15,
+  "useCase": "exploreAndUpdate",
+  "updateTransactions": 30,
+  "hookSparqlEndpoint": {"@id": "urn:jbr:benchmark-bsbm-file-update:combination_0:hookSparqlEndpoint", "@type": "HookCli", "entrypoint": ["node", "../../packages/utils-monorepo/bin/performance-endpoint-memory.js", "../../engines/query-sparql-file", "file@generated/dataset.nt", "-p", "3001", "-u", "--warmup", "2000"], "statsFilePath": "output/stats.csv"}
+}

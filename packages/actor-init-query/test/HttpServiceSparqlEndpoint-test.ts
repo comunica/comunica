@@ -2483,6 +2483,99 @@ INSERT DATA {
         expect(responseString).toBe('test_query_result');
       });
 
+      it('should fallback to simple for updates if the media type cannot represent updates', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        const execute = jest.fn(() => Promise.resolve());
+        engine.query = () => ({ resultType: 'void', execute });
+        engine.resultToString = jest.fn(async(_result: any, mediaType: string) => {
+          if (mediaType !== 'simple') {
+            throw new Error(`Unsupported media type ${mediaType}`);
+          }
+          return { data: Readable.from([ 'ok\n' ]) };
+        });
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          'application/sparql-results+xml',
+          false,
+          true,
+          0,
+        );
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(execute).toHaveBeenCalledTimes(1);
+        expect(engine.resultToString).toHaveBeenCalledTimes(2);
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': 'simple', 'Access-Control-Allow-Origin': '*' },
+        );
+        response.push(null);
+        const responseString = await stringifyStream(response);
+        expect(responseString).toBe('ok\n');
+      });
+
+      it('should end the response with an error if updates cannot be serialized as simple either', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
+        engine.resultToString = jest.fn(async() => {
+          throw new Error('Unsupported media type');
+        });
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          'application/sparql-results+xml',
+          false,
+          true,
+          0,
+        );
+
+        await expect(endCalledPromise).resolves.toBe(
+          'The response for the given query could not be serialized for the requested media type\n',
+        );
+        expect(engine.resultToString).toHaveBeenCalledTimes(2);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          400,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+        );
+      });
+
+      it('should end the response with an error if updates cannot be serialized as the requested simple', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
+        engine.resultToString = jest.fn(async() => {
+          throw new Error('Unsupported media type');
+        });
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          'simple',
+          false,
+          true,
+          0,
+        );
+
+        await expect(endCalledPromise).resolves.toBe(
+          'The response for the given query could not be serialized for the requested media type\n',
+        );
+        expect(engine.resultToString).toHaveBeenCalledTimes(1);
+      });
+
       it('should set readOnly in the context if called with readOnly true', async() => {
         const engine = await new QueryEngineFactoryBase().create();
         jest.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));

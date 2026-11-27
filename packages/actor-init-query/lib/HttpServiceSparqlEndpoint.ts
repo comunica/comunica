@@ -850,7 +850,9 @@ export class HttpServiceSparqlEndpoint {
 
     let eventEmitter: EventEmitter | undefined;
     try {
-      const { data } = await engine.resultToString(result, mediaType);
+      const serialized = await HttpServiceSparqlEndpoint.serializeResult(engine, result, mediaType);
+      const { data } = serialized;
+      mediaType = serialized.mediaType;
 
       // Only write the header once serialization has started, so that a failure can still be reported as such
       response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
@@ -872,6 +874,31 @@ export class HttpServiceSparqlEndpoint {
     }
 
     this.stopResponse(response, queryId, process.stderr, eventEmitter);
+  }
+
+  /**
+   * Serialize a query result for the given media type.
+   * The response body of a successful update is implementation defined, and the update has already been executed,
+   * so updates fall back to the simple media type if the requested one can not represent them,
+   * such as SPARQL results, which clients commonly request for updates as well.
+   * @param {QueryEngineBase} engine A SPARQL engine.
+   * @param {QueryType} result The query result.
+   * @param {string} mediaType The requested media type.
+   * @return The serialized result and its media type.
+   */
+  public static async serializeResult(
+    engine: QueryEngineBase,
+    result: QueryType,
+    mediaType: string,
+  ): Promise<{ data: NodeJS.ReadableStream; mediaType: string }> {
+    try {
+      return { ...await engine.resultToString(result, mediaType), mediaType };
+    } catch (error: unknown) {
+      if (result.resultType !== 'void' || mediaType === 'simple') {
+        throw error;
+      }
+      return { ...await engine.resultToString(result, 'simple'), mediaType: 'simple' };
+    }
   }
 
   /**
