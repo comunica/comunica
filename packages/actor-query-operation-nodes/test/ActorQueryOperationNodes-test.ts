@@ -4,6 +4,7 @@ import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationNodes } from '../lib/ActorQueryOperationNodes';
 import '@comunica/utils-jest';
@@ -18,7 +19,11 @@ describe('ActorQueryOperationNodes', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg: any) => Promise.resolve({ type: 'bindings', operated: arg }),
+      mediate: jest.fn(async() => ({
+        type: 'bindings',
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
+        metadata: async() => ({ variables: []}),
+      })),
     };
   });
 
@@ -51,14 +56,12 @@ describe('ActorQueryOperationNodes', () => {
       /**
        * Run the actor on a nodes operation binding ?x in the given graph.
        * @param graph The graph of the nodes operation.
-       * @return The operation the actor delegates to.
        */
-      async function runAndGetDelegatedOperation(graph: RDF.Term): Promise<Algebra.Operation> {
-        const result: any = await actor.runOperation(
+      async function runNodes(graph: RDF.Term): Promise<void> {
+        await actor.runOperation(
           assignOperationSource(AF.createNodes(graph, DF.variable('x')), source),
           new ActionContext().set(KeysInitQuery.dataFactory, DF),
         );
-        return result.operated.operation;
       }
 
       /**
@@ -76,14 +79,23 @@ describe('ActorQueryOperationNodes', () => {
       }
 
       it('should rewrite operations into distinct-project-union-pattern', async() => {
-        await expect(runAndGetDelegatedOperation(DF.defaultGraph())).resolves
-          .toEqual(AF.createDistinct(AF.createProject(createUnion(DF.defaultGraph()), [ DF.variable('x') ])));
+        await runNodes(DF.defaultGraph());
+
+        expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+          context: expect.any(ActionContext),
+          operation: AF.createDistinct(AF.createProject(createUnion(DF.defaultGraph()), [ DF.variable('x') ])),
+        });
       });
 
       it('should project the graph variable', async() => {
-        await expect(runAndGetDelegatedOperation(DF.variable('g'))).resolves.toEqual(AF.createDistinct(
-          AF.createProject(createUnion(DF.variable('g')), [ DF.variable('g'), DF.variable('x') ]),
-        ));
+        await runNodes(DF.variable('g'));
+
+        expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+          context: expect.any(ActionContext),
+          operation: AF.createDistinct(
+            AF.createProject(createUnion(DF.variable('g')), [ DF.variable('g'), DF.variable('x') ]),
+          ),
+        });
       });
     });
   });
