@@ -206,8 +206,27 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
           metadata: { a: 1 },
           quads: expect.anything(),
           url: 'startUrl',
+          originalUrl: 'startUrl',
           context: new ActionContext({ a: 1, b: 2 }),
         });
+      });
+
+      it('should pass both the dereferenced and the original URL after a redirect', async() => {
+        const mediateDereference = mediatorDereferenceRdf.mediate;
+        mediatorDereferenceRdf.mediate = async(action: IActionDereferenceRdf) => ({
+          ...await mediateDereference(action),
+          url: 'https://example.org/landing-page',
+        });
+        jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
+        await actor.run({
+          link: { url: 'https://example.org/sparql', forceSourceType: 'sparql' },
+          context: new ActionContext(),
+        });
+        expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledWith(expect.objectContaining({
+          url: 'https://example.org/landing-page',
+          originalUrl: 'https://example.org/sparql',
+          forceSourceType: 'sparql',
+        }));
       });
 
       it('should delegate dereference errors to the source', async() => {

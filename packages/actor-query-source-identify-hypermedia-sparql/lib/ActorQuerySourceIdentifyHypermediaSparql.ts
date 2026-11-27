@@ -79,13 +79,18 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   }
 
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {
-    this.logInfo(action.context, `Identified ${action.url} as sparql source with service URL: ${action.metadata.sparqlService || action.url}`);
+    // Forced SPARQL sources keep their given URL, as service description redirects (e.g. to a landing page)
+    // do not move the endpoint. This matches the single forced source case, which skips the service description.
+    const serviceUrl = (action.forceSourceType ?? this.forceSourceType) ?
+      action.originalUrl ?? action.url :
+      action.metadata.sparqlService || action.url;
+    this.logInfo(action.context, `Identified ${action.url} as sparql source with service URL: ${serviceUrl}`);
 
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
     const isSingularSource = action.context.get(KeysQueryOperation.querySources)?.length === 1;
     const source = new QuerySourceSparql(
-      (action.forceSourceType ?? this.forceSourceType) ? action.url : action.metadata.sparqlService || action.url,
+      serviceUrl,
       // Pass the original URL as backup, as some endpoints misconfigure their endpoint URL in the service description.
       action.url,
       action.context,
