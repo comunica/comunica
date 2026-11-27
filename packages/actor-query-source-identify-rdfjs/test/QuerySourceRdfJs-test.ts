@@ -152,6 +152,92 @@ describe('QuerySourceRdfJs', () => {
         });
     });
 
+    it('should count distinct subjects for sources that can count them and objects cheaply', async() => {
+      store = RdfStore.createDefault(true);
+      (<any> store.features).indexDistinctSubjectCounts = true;
+      source = new QuerySourceRdfJs(store, DF, BF);
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o2')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({ s: DF.namedNode('s1'), o: DF.namedNode('o1') }),
+        BF.fromRecord({ s: DF.namedNode('s1'), o: DF.namedNode('o2') }),
+        BF.fromRecord({ s: DF.namedNode('s2'), o: DF.namedNode('o2') }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 3 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false, distinctValues: 2 },
+            { variable: DF.variable('o'), canBeUndef: false, distinctValues: 2 },
+          ],
+          requestTime: 0,
+        });
+    });
+
+    it('should not count distinct subjects for sources that can not count distinct objects cheaply', async() => {
+      store = RdfStore.createDefault(true);
+      store.features.indexDistinctObjectCounts = false;
+      (<any> store.features).indexDistinctSubjectCounts = true;
+      const countDistinctTerms = jest.spyOn(store, 'countDistinctTerms');
+      source = new QuerySourceRdfJs(store, DF, BF);
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({ s: DF.namedNode('s1'), o: DF.namedNode('o1') }),
+        BF.fromRecord({ s: DF.namedNode('s2'), o: DF.namedNode('o2') }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
+          requestTime: 0,
+        });
+      expect(countDistinctTerms).not.toHaveBeenCalled();
+    });
+
+    it('should not count distinct values of predicates', async() => {
+      (<any> (<RdfStore> store).features).indexDistinctSubjectCounts = true;
+      const countDistinctTerms = jest.spyOn(<RdfStore> store, 'countDistinctTerms');
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('q'), DF.namedNode('o2')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.namedNode('s1'), DF.variable('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({ p: DF.namedNode('p'), o: DF.namedNode('o1') }),
+        BF.fromRecord({ p: DF.namedNode('q'), o: DF.namedNode('o2') }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
+          requestTime: 0,
+        });
+      expect(countDistinctTerms).not.toHaveBeenCalled();
+    });
+
     it('should not count distinct values for sources that can not count distinct objects cheaply', async() => {
       store = RdfStore.createDefault(true);
       // As a source that can count distinct terms, but does not declare that this is cheap
