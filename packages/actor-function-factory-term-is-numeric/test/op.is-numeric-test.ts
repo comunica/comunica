@@ -25,6 +25,14 @@ describe('like \'isNumeric\' receiving', () => {
         "foo"@fr = false
         1 = true
         "1"^^xsd:int = true
+        "12"^^xsd:nonNegativeInteger = true
+        "127"^^xsd:byte = true
+        "1200"^^xsd:byte = false
+        "-1"^^xsd:nonNegativeInteger = false
+        "1.5"^^xsd:integer = false
+        "a"^^xsd:integer = false
+        "1e3"^^xsd:decimal = false
+        "a"^^xsd:double = false
       `,
   });
 });

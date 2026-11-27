@@ -121,10 +121,10 @@ export class TermTransformer implements ITermTransformer {
         return new E.BooleanLiteral(lit.value === 'true' || lit.value === '1', lit.value);
       }
       if (TypeURL.XSD_DECIMAL in superTypeDict) {
-        const intVal: number | undefined = P.parseXSDDecimal(lit.value);
-        if (intVal === undefined) {
+        if (!P.isValidXSDNumeric(lit.value, superTypeDict)) {
           return new E.NonLexicalLiteral(undefined, dataType, this.superTypeProvider, lit.value);
         }
+        const intVal = <number> P.parseXSDDecimal(lit.value);
         if (TypeURL.XSD_INTEGER in superTypeDict) {
           return new E.IntegerLiteral(intVal, dataType, lit.value);
         }
@@ -134,7 +134,9 @@ export class TermTransformer implements ITermTransformer {
       const isFloat = TypeURL.XSD_FLOAT in superTypeDict;
       const isDouble = TypeURL.XSD_DOUBLE in superTypeDict;
       if (isFloat || isDouble) {
-        const doubleVal: number | undefined = P.parseXSDFloat(lit.value);
+        const doubleVal: number | undefined = P.isValidXSDNumeric(lit.value, superTypeDict) ?
+          P.parseXSDFloat(lit.value) :
+          undefined;
         if (doubleVal === undefined) {
           return new E.NonLexicalLiteral(undefined, dataType, this.superTypeProvider, lit.value);
         }

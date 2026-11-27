@@ -309,6 +309,77 @@ describe('TermTransformer', () => {
       });
     });
 
+    describe('returns non-lexical for numeric values outside the lexical space or value range', () => {
+      it.each([
+        [ '', DT.XSD_INTEGER ],
+        [ '1.5', DT.XSD_INTEGER ],
+        [ '1.', DT.XSD_INTEGER ],
+        [ '1e3', DT.XSD_INTEGER ],
+        [ '0x10', DT.XSD_INTEGER ],
+        [ 'Infinity', DT.XSD_INTEGER ],
+        [ '1 2', DT.XSD_INTEGER ],
+        [ '1200', DT.XSD_BYTE ],
+        [ '-129', DT.XSD_BYTE ],
+        [ '32768', DT.XSD_SHORT ],
+        [ '2147483648', DT.XSD_INT ],
+        [ '9223372036854775808', DT.XSD_LONG ],
+        [ '-9223372036854775809', DT.XSD_LONG ],
+        [ '1', DT.XSD_NON_POSITIVE_INTEGER ],
+        [ '0', DT.XSD_NEGATIVE_INTEGER ],
+        [ '-1', DT.XSD_NON_NEGATIVE_INTEGER ],
+        [ '0', DT.XSD_POSITIVE_INTEGER ],
+        [ '-1', DT.XSD_UNSIGNED_LONG ],
+        [ '18446744073709551616', DT.XSD_UNSIGNED_LONG ],
+        [ '4294967296', DT.XSD_UNSIGNED_INT ],
+        [ '65536', DT.XSD_UNSIGNED_SHORT ],
+        [ '256', DT.XSD_UNSIGNED_BYTE ],
+        [ '', DT.XSD_DECIMAL ],
+        [ '.', DT.XSD_DECIMAL ],
+        [ '1e3', DT.XSD_DECIMAL ],
+        [ '0x10', DT.XSD_DECIMAL ],
+        [ 'INF', DT.XSD_DECIMAL ],
+        [ '', DT.XSD_DOUBLE ],
+        [ '0x10', DT.XSD_DOUBLE ],
+        [ 'Infinity', DT.XSD_DOUBLE ],
+        [ 'inf', DT.XSD_DOUBLE ],
+        [ '1e', DT.XSD_FLOAT ],
+        [ ' INF ', DT.XSD_FLOAT ],
+      ])('%j^^%s', (value, dataType) => {
+        returnNonLexicalTest(value, dataType);
+      });
+    });
+
+    describe('accepts numeric values in the lexical space and value range', () => {
+      it.each([
+        [ '+5', DT.XSD_INTEGER, 5 ],
+        [ '-0', DT.XSD_INTEGER, -0 ],
+        [ ' 12\n', DT.XSD_INTEGER, 12 ],
+        [ '127', DT.XSD_BYTE, 127 ],
+        [ '-128', DT.XSD_BYTE, -128 ],
+        [ '9223372036854775807', DT.XSD_LONG, 2 ** 63 ],
+        [ '-9223372036854775808', DT.XSD_LONG, -(2 ** 63) ],
+        [ '0', DT.XSD_NON_POSITIVE_INTEGER, 0 ],
+        [ '-1', DT.XSD_NEGATIVE_INTEGER, -1 ],
+        [ '-0', DT.XSD_NON_NEGATIVE_INTEGER, -0 ],
+        [ '12', DT.XSD_NON_NEGATIVE_INTEGER, 12 ],
+        [ '1', DT.XSD_POSITIVE_INTEGER, 1 ],
+        [ '18446744073709551615', DT.XSD_UNSIGNED_LONG, 2 ** 64 ],
+        [ '255', DT.XSD_UNSIGNED_BYTE, 255 ],
+        [ '5.', DT.XSD_DECIMAL, 5 ],
+        [ '-.5', DT.XSD_DECIMAL, -0.5 ],
+        [ '1E2', DT.XSD_DOUBLE, 100 ],
+        [ '-.5e-1', DT.XSD_DOUBLE, -0.05 ],
+        [ '+INF', DT.XSD_DOUBLE, Number.POSITIVE_INFINITY ],
+        [ '-INF', DT.XSD_FLOAT, Number.NEGATIVE_INFINITY ],
+        [ 'NaN', DT.XSD_FLOAT, Number.NaN ],
+      ])('%j^^%s', (value, dataType, typedValue) => {
+        const res = termTransformer.transformLiteral(DF.literal(value, DF.namedNode(dataType)));
+        expect(isNonLexicalLiteral(res)).toBeUndefined();
+        expect(res.dataType).toBe(dataType);
+        expect(res.typedValue).toBe(typedValue);
+      });
+    });
+
     it('badly invalid literal', () => {
       // @ts-expect-error
       const res = termTransformer.transformLiteral({
