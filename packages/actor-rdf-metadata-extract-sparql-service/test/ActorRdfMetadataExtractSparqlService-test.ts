@@ -64,6 +64,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     const endpointDefaultDataset = DF.namedNode('http://localhost/dataset');
     const endpointDefaultGraph = DF.namedNode('http://localhost/graph');
     const endpointExtensionFunction = DF.namedNode('http://localhost/function');
+    const endpointExtensionAggregate = DF.namedNode('http://localhost/aggregate');
 
     const sparqlResultsJson = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_JSON');
     const sparqlResultsXml = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_XML');
@@ -89,6 +90,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     const serviceDescriptionBasicFederatedQuery = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}BasicFederatedQuery`);
     const serviceDescriptionUnionDefaultGraph = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}UnionDefaultGraph`);
     const serviceDescriptionExtensionFunction = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}extensionFunction`);
+    const serviceDescriptionExtensionAggregate = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}extensionAggregate`);
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus, inferHttpsEndpoint: false });
@@ -110,6 +112,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
         DF.quad(serviceDescriptionIri, serviceDescriptionDefaultDataset, endpointDefaultDataset),
         DF.quad(endpointDefaultDataset, serviceDescriptionDefaultGraph, endpointDefaultGraph),
         DF.quad(endpointDefaultDataset, serviceDescriptionExtensionFunction, endpointExtensionFunction),
+        DF.quad(endpointDefaultDataset, serviceDescriptionExtensionAggregate, endpointExtensionAggregate),
       ]);
       await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
         metadata: {
@@ -122,7 +125,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
           resultFormats: [ sparqlResultsXml.value ],
           supportedLanguages: [ sparql11Query.value, sparqlQuery.value ],
           supportedVersions: [ sparqlVersion11.value ],
-          extensionFunctions: [ endpointExtensionFunction.value ],
+          extensionFunctions: [ endpointExtensionFunction.value, endpointExtensionAggregate.value ],
           propertyFeatures: [ propertyFeature.value ],
         },
       });

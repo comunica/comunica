@@ -546,6 +546,10 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
+          cache: yarn
+      - name: Install dependencies
+        # Only needed for running the HTTP requests script with ts-node, so the monorepo is not built
+        run: yarn install --frozen-lockfile --ignore-scripts
       - uses: actions/download-artifact@v8
         with:
           name: performance-benchmark-watdiv-file
@@ -588,12 +592,21 @@ jobs:
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File,Web --total true --detailed false --name ghbench-total.json
       - name: Process benchmark ingestion results
         run: jq -s 'add' performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
+      - name: Process benchmark HTTP request results
+        run: |
+          npx ts-node --transpile-only -O '{"rootDir":"."}' packages/utils-monorepo/bin/performance-requests.ts ghbench-requests.json WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/
+          jq 'map(select(.name | contains(" - ") | not))' ghbench-requests.json > ghbench-requests-total.json
+          jq 'map(select((.name | contains(" - ")) and .value != null))' ghbench-requests.json > ghbench-requests-detail.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_TOTAL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total" >> $GITHUB_ENV
       - name: Determine benchmarks ingestion results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_INGESTION=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-ingestion" >> $GITHUB_ENV
+      - name: Determine benchmarks HTTP request results target directory names
+        run: |
+          echo "BENCHMARK_DATA_DIR_PATH_REQUESTS_TOTAL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-requests-total" >> $GITHUB_ENV
+          echo "BENCHMARK_DATA_DIR_PATH_REQUESTS_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-requests-detail" >> $GITHUB_ENV
       - name: Finalize benchmarks detailed results
         uses: benchmark-action/github-action-benchmark@v1
         with:
@@ -642,9 +655,41 @@ jobs:
           gh-repository: github.com/comunica/comunica-performance-results
           gh-pages-branch: master
           benchmark-data-dir-path: ${{ env.BENCHMARK_DATA_DIR_PATH_INGESTION }}
+      - name: Cleanup benchmark-action data
+        run: rm -rf ./benchmark-data-repository
+      - name: Finalize benchmarks HTTP request total results
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Benchmarks HTTP request total results
+          tool: customSmallerIsBetter
+          output-file-path: ghbench-requests-total.json
+          github-token: ${{ secrets.PAT }}
+          auto-push: true
+          # The totals vary by about 0.2% across runs of the same commit
+          alert-threshold: '105%'
+          comment-on-alert: true
+          alert-comment-cc-users: '@rubensworks'
+          summary-always: true
+          gh-repository: github.com/comunica/comunica-performance-results
+          gh-pages-branch: master
+          benchmark-data-dir-path: ${{ env.BENCHMARK_DATA_DIR_PATH_REQUESTS_TOTAL }}
+      - name: Cleanup benchmark-action data
+        run: rm -rf ./benchmark-data-repository
+      - name: Finalize benchmarks HTTP request detailed results
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Benchmarks HTTP request detailed results
+          tool: customSmallerIsBetter
+          output-file-path: ghbench-requests-detail.json
+          github-token: ${{ secrets.PAT }}
+          auto-push: true
+          alert-comment-cc-users: '@rubensworks'
+          gh-repository: github.com/comunica/comunica-performance-results
+          gh-pages-branch: master
+          benchmark-data-dir-path: ${{ env.BENCHMARK_DATA_DIR_PATH_REQUESTS_DETAIL }}
       - name: Prepare comment on commit with link to performance results
         run: |
-          echo -e "Performance benchmarks succeeded! 🚀\n\n\[[Summarized results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total/)\] \[[Detailed results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail/)\] \[[Ingestion results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-ingestion/)\] \[[Bundle sizes](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/bundle-sizes/)\]" > ./commit-comment-body.txt
+          echo -e "Performance benchmarks succeeded! 🚀\n\n\[[Summarized results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total/)\] \[[Detailed results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail/)\] \[[Ingestion results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-ingestion/)\] \[[HTTP requests](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-requests-total/)\] \[[Detailed HTTP requests](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-requests-detail/)\] \[[Bundle sizes](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/bundle-sizes/)\]" > ./commit-comment-body.txt
           # Failed queries have no time, so they are listed separately
           jq -r '
             map(select((.name | endswith(" - failed queries")) and .value > 0))
@@ -777,6 +822,12 @@ jobs:
           collect() { if [ $# -gt 0 ]; then jq -s 'add' "$@"; else echo '[]'; fi; }
           collect performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
           collect base/performance/*/combinations/combination_0/output/ingestion.json > ghbench-base-ingestion.json
+      - name: Collect benchmark HTTP request results
+        run: |
+          set -eu
+          requests() { npx ts-node --transpile-only -O '{"rootDir":"."}' packages/utils-monorepo/bin/performance-requests.ts "$@"; }
+          requests ghbench-requests.json WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/
+          requests ghbench-base-requests.json $BASE_BENCHMARK_LABELS $BASE_BENCHMARK_DIRS
       - name: Assemble the comparison comment
         # Posted by the performance-comment workflow, as this job
         # receives a read-only GITHUB_TOKEN on pull requests from forks.
@@ -789,7 +840,8 @@ jobs:
           npx ts-node --transpile-only -O '{"rootDir":"."}' packages/utils-monorepo/bin/performance-comparison.ts \
             ghbench-detail.json ghbench-base-detail.json "$HEAD_SHA" "$BASE_SHA" \
             "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
-            ghbench-ingestion.json ghbench-base-ingestion.json > comparison-comment.md
+            ghbench-ingestion.json ghbench-base-ingestion.json \
+            ghbench-requests.json ghbench-base-requests.json > comparison-comment.md
           echo "$PULL_REQUEST_NUMBER" > comparison-pull-request.txt
           cat comparison-comment.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v7
