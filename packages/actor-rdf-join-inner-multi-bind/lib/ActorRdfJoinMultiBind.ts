@@ -29,12 +29,22 @@ import {
   materializeOperation,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
+import { ArrayIterator, MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
+import { termToString } from 'rdf-string';
 
 /**
  * A comunica Multi-way Bind RDF Join Actor.
  */
 export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTestSideData> {
+  /**
+   * The maximum number of results of a bound operation to reuse for other bindings.
+   */
+  public static readonly REUSE_RESULTS_MAX = 1_000;
+  /**
+   * The maximum number of results to keep for reuse, over all bound operations of a join.
+   */
+  public static readonly REUSE_RESULTS_TOTAL_MAX = 10_000;
+
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
   public readonly minMaxCardinalityRatio: number;
@@ -62,6 +72,82 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   }
 
   /**
+   * Determine the names of all variables that occur in the given operations.
+   * @param operations Operations.
+   */
+  public static getOperationVariableNames(operations: Algebra.Operation[]): Set<string> {
+    const names = new Set<string>();
+    const visited = new Set<object>();
+    const visit = (value: any): void => {
+      if (value && typeof value === 'object' && !visited.has(value)) {
+        visited.add(value);
+        if (value.termType === 'Variable') {
+          names.add(value.value);
+        }
+        for (const [ key, child ] of Object.entries(value)) {
+          if (key !== 'metadata') {
+            visit(child);
+          }
+        }
+      }
+    };
+    visit(operations);
+    return names;
+  }
+
+  /**
+   * Wrap an operation binder, so that it reuses the results of bound operations for bindings that agree on all
+   * variables of the operations, as these produce the same bound operations.
+   * Results are only reused once all of them were produced, and if they are few.
+   * @param operations The operations that are bound.
+   * @param operationBinder A callback to retrieve the bindings stream of bound operations.
+   * @param resultsMax The maximum number of results of a bound operation to reuse.
+   * @param resultsTotalMax The maximum number of results to keep for reuse, over all bound operations.
+   */
+  public static createReusingOperationBinder(
+    operations: Algebra.Operation[],
+    operationBinder: (boundOperations: Algebra.Operation[], operationBindings: Bindings) => Promise<BindingsStream>,
+    resultsMax = ActorRdfJoinMultiBind.REUSE_RESULTS_MAX,
+    resultsTotalMax = ActorRdfJoinMultiBind.REUSE_RESULTS_TOTAL_MAX,
+  ): (boundOperations: Algebra.Operation[], operationBindings: Bindings) => Promise<BindingsStream> {
+    const variables = ActorRdfJoinMultiBind.getOperationVariableNames(operations);
+    const reusableResults = new Map<string, Bindings[]>();
+    let reusableResultsTotal = 0;
+    return async(boundOperations: Algebra.Operation[], operationBindings: Bindings): Promise<BindingsStream> => {
+      const key = JSON.stringify([ ...operationBindings ]
+        .filter(([ variable ]) => variables.has(variable.value))
+        .map(([ variable, term ]) => `${variable.value}=${termToString(term)}`)
+        .sort());
+      const results = reusableResults.get(key);
+      if (results) {
+        return new ArrayIterator(results, { autoStart: false });
+      }
+
+      // Record the results, and keep them if all of them were produced.
+      let recorded: Bindings[] | undefined = [];
+      const stream = (await operationBinder(boundOperations, operationBindings)).map((result) => {
+        if (recorded && recorded.length < resultsMax) {
+          recorded.push(result);
+        } else {
+          recorded = undefined;
+        }
+        return result;
+      });
+      stream.on('end', () => {
+        if (recorded && !reusableResults.has(key)) {
+          if (reusableResultsTotal + recorded.length > resultsTotalMax) {
+            reusableResults.clear();
+            reusableResultsTotal = 0;
+          }
+          reusableResults.set(key, recorded);
+          reusableResultsTotal += recorded.length;
+        }
+      });
+      return stream;
+    };
+  }
+
+  /**
    * Create a new bindings stream that takes every binding of the base stream
    * and binds it to the remaining patterns, evaluates those patterns, and emits all their bindings.
    *
@@ -85,6 +171,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     // Enable auto-start on sub-bindings during depth-first binding for best performance.
     const autoStartSubBindings = bindOrder === 'depth-first';
 
+    const getBoundStream = ActorRdfJoinMultiBind.createReusingOperationBinder(operations, operationBinder);
+
     // Create bindings function
     const binder = (bindings: Bindings): BindingsStream => {
       // We don't bind the filter because filters are always handled last,
@@ -97,7 +185,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         { bindFilter: true },
       ));
       const bindingsMerger = (subBindings: Bindings): Bindings | undefined => subBindings.merge(bindings);
-      return new TransformIterator(async() => (await operationBinder(subOperations, bindings))
+      return new TransformIterator(async() => (await getBoundStream(subOperations, bindings))
         .transform({ map: bindingsMerger }), { maxBufferSize: 128, autoStart: autoStartSubBindings });
     };
 
