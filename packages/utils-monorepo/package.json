@@ -25,6 +25,7 @@
     "access": "public"
   },
   "bin": {
+    "approve-staged": "./bin/approve-staged.js",
     "bundle-sizes": "./bin/bundle-sizes.js",
     "depcheckTask": "./bin/depcheckTask.js",
     "performance-comparison": "./bin/performance-comparison.js",
