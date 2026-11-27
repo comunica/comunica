@@ -1,41 +1,23 @@
 // eslint-disable-next-line import/no-nodejs-modules
-import { spawn } from 'node:child_process';
-
-// eslint-disable-next-line import/no-nodejs-modules
-import { createInterface } from 'node:readline';
-
-// eslint-disable-next-line import/no-nodejs-modules
 import { parseArgs } from 'node:util';
-import semver from 'semver';
-
-// eslint-disable-next-line ts/no-var-requires,ts/no-require-imports
-const { getPackages } = require('@manypkg/get-packages');
-
-/**
- * The first npm version that has the `npm stage` commands.
- */
-export const MIN_NPM_VERSION = '11.15.0';
+import type { IStagedVersion, NpmRunner } from './npmCli';
+import {
+  assertNpmStageSupport,
+  getPublicPackages,
+  isOtpError,
+  isRateLimitError,
+  listStaged,
+  npmErrorMessage,
+  parseConcurrency,
+  promptTerminal,
+  RateLimitBackoff,
+  runNpm,
+} from './npmCli';
 
 /**
  * How many times a single approval is retried with a new OTP.
  */
 export const MAX_OTP_ATTEMPTS = 3;
-
-/**
- * A staged package version, as listed by `npm stage list --json`.
- */
-export interface IStagedVersion {
-  id: string;
-  packageName: string;
-  version: string;
-  status?: string;
-}
-
-export interface INpmResult {
-  code: number | null;
-  stdout: string;
-  stderr: string;
-}
 
 export interface IApproveStagedOptions {
   /**
@@ -54,109 +36,25 @@ export interface IApproveStagedOptions {
    * Skip the confirmation prompt.
    */
   yes: boolean;
-  npm: (args: string[]) => Promise<INpmResult>;
+  npm: NpmRunner;
   prompt: (question: string) => Promise<string>;
   log: (message: string) => void;
-}
-
-/**
- * Run an npm command and capture its output.
- * Stdin is ignored, so npm fails with EOTP instead of prompting by itself.
- * @param args The npm arguments.
- */
-export function runNpm(args: string[]): Promise<INpmResult> {
-  return new Promise((resolve, reject) => {
-    const child = spawn('npm', args, { stdio: [ 'ignore', 'pipe', 'pipe' ]});
-    let stdout = '';
-    let stderr = '';
-    child.stdout.on('data', (data) => {
-      stdout += data;
-    });
-    child.stderr.on('data', (data) => {
-      stderr += data;
-    });
-    child.on('error', reject);
-    child.on('close', code => resolve({ code, stdout, stderr }));
-  });
-}
-
-/**
- * Ask a question on the terminal.
- * Rejects if the terminal is closed before answering, such as with Ctrl+C.
- * @param question The question.
- * @return The trimmed answer.
- */
-export function promptTerminal(question: string): Promise<string> {
-  const readline = createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise((resolve, reject) => {
-    readline.on('close', () => reject(new Error('Aborted')));
-    readline.question(question, (answer) => {
-      resolve(answer.trim());
-      readline.close();
-    });
-  });
-}
-
-/**
- * Extract the error message from npm's stderr output.
- * @param stderr The stderr output of an npm command.
- */
-export function npmErrorMessage(stderr: string): string {
-  const lines = stderr.split('\n')
-    .filter(line => line.startsWith('npm error '))
-    .map(line => line.slice('npm error '.length))
-    .filter(line => !line.startsWith('A complete log of this run'));
-  return lines.length > 0 ? lines.join(' ') : stderr.trim();
-}
-
-/**
- * Check if npm failed because the registry is rate limiting.
- * @param stderr The stderr output of an npm command.
- */
-export function isRateLimitError(stderr: string): boolean {
-  return /\bE429\b|rate limit/iu.test(stderr);
-}
-
-/**
- * Check if npm failed because of a missing, invalid or expired OTP.
- * @param stderr The stderr output of an npm command.
- */
-export function isOtpError(stderr: string): boolean {
-  return /\bEOTP\b|one-time pass/iu.test(stderr);
-}
-
-/**
- * Get the names of all non-private packages in the given monorepo.
- * @param cwd The monorepo directory.
- */
-export async function getPublicPackageNames(cwd: string): Promise<Set<string>> {
-  const { packages } = await getPackages(cwd);
-  return new Set(packages
-    .filter((pkg: any) => !pkg.packageJson.private)
-    .map((pkg: any) => pkg.packageJson.name));
+  backoff: RateLimitBackoff;
 }
 
 /**
  * Approve all staged versions of the packages in a monorepo.
  * One OTP is reused until npm rejects it, after which a new one is requested.
+ * When npm rate limits, all approvals pause and are retried afterwards.
  * @param options The options.
  * @return If all staged versions were approved.
  */
 export async function approveStaged(options: IApproveStagedOptions): Promise<boolean> {
-  const { npm, prompt, log } = options;
+  const { npm, prompt, log, backoff } = options;
 
-  const versionResult = await npm([ '--version' ]);
-  const npmVersion = versionResult.stdout.trim();
-  if (!semver.valid(npmVersion) || semver.lt(npmVersion, MIN_NPM_VERSION)) {
-    throw new Error(`Approving staged versions requires npm ${MIN_NPM_VERSION} or later, but found "${npmVersion}". Upgrade with: npm install -g npm@latest`);
-  }
-
-  const packageNames = await getPublicPackageNames(options.cwd);
-  const listResult = await npm([ 'stage', 'list', '--json' ]);
-  if (listResult.code !== 0) {
-    throw new Error(`Failed to list staged versions: ${npmErrorMessage(listResult.stderr)}`);
-  }
-  const staged: IStagedVersion[] = (<IStagedVersion[]> JSON.parse(listResult.stdout))
+  await assertNpmStageSupport(npm);
+  const packageNames = new Set((await getPublicPackages(options.cwd)).map(pkg => pkg.name));
+  const staged = (await listStaged(npm))
     .filter(item => packageNames.has(item.packageName) &&
       (options.version === undefined || item.version === options.version));
   if (staged.length === 0) {
@@ -201,21 +99,28 @@ export async function approveStaged(options: IApproveStagedOptions): Promise<boo
   const queue = [ ...staged ];
   const failures: string[] = [];
   let approved = 0;
-  let rateLimited = false;
 
   const approve = async(item: IStagedVersion): Promise<void> => {
     const label = `${item.packageName}@${item.version}`;
-    for (let attempt = 1; ; attempt++) {
+    let otpAttempts = 0;
+    while (true) {
+      await backoff.waitIfPaused();
       const usedOtp = otp;
       const result = await npm([ 'stage', 'approve', item.id, `--otp=${usedOtp}` ]);
       if (result.code === 0) {
+        backoff.success();
         approved++;
         log(`[${approved}/${staged.length}] Approved ${label}`);
         return;
       }
       if (isRateLimitError(result.stderr)) {
-        rateLimited = true;
-      } else if (isOtpError(result.stderr) && attempt < MAX_OTP_ATTEMPTS) {
+        const delay = backoff.hit();
+        if (delay !== undefined) {
+          log(`npm is rate limiting, so waiting ${delay / 1000}s before continuing (${approved}/${staged.length} approved).`);
+        }
+        continue;
+      }
+      if (isOtpError(result.stderr) && ++otpAttempts < MAX_OTP_ATTEMPTS) {
         await renewOtp(usedOtp);
         continue;
       }
@@ -226,9 +131,6 @@ export async function approveStaged(options: IApproveStagedOptions): Promise<boo
 
   await Promise.all(Array.from({ length: options.concurrency }, async() => {
     while (queue.length > 0) {
-      if (rateLimited) {
-        return;
-      }
       await approve(queue.shift()!);
     }
   }));
@@ -236,9 +138,6 @@ export async function approveStaged(options: IApproveStagedOptions): Promise<boo
   log(`Approved ${approved} of ${staged.length} staged versions.`);
   if (failures.length > 0) {
     log(`Failed to approve ${failures.length}:\n${failures.map(failure => `  ${failure}`).join('\n')}`);
-  }
-  if (rateLimited) {
-    log(`npm is rate limiting, so ${queue.length} were not attempted. Wait a while and run this again.`);
   }
   return failures.length === 0;
 }
@@ -258,18 +157,15 @@ export async function approveStagedCli(argv: string[], cwd: string): Promise<boo
       yes: { type: 'boolean', short: 'y', default: false },
     },
   });
-  const concurrency = Number(values.concurrency);
-  if (!Number.isInteger(concurrency) || concurrency < 1) {
-    throw new Error(`--concurrency must be a positive integer, but got "${values.concurrency}"`);
-  }
   return approveStaged({
     cwd,
     version: values.version,
-    concurrency,
+    concurrency: parseConcurrency(values.concurrency),
     yes: values.yes,
     npm: runNpm,
     prompt: promptTerminal,
     // eslint-disable-next-line no-console
     log: message => console.log(message),
+    backoff: new RateLimitBackoff(30_000, 300_000),
   });
 }
