@@ -14,8 +14,9 @@ import type {
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { ClosableTransformIterator } from '@comunica/utils-iterator';
 import { getGroupOutputCardinality, getSafeBindings } from '@comunica/utils-query-operation';
-import { ArrayIterator, TransformIterator } from 'asynciterator';
+import { ArrayIterator } from 'asynciterator';
 import { GroupsState } from './GroupsState';
 
 /**
@@ -57,7 +58,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     const variablesInner = (await output.metadata()).variables.map(v => v.variable);
 
     // Wrap a new promise inside an iterator that completes when the stream has ended or when an error occurs
-    const bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
+    const bindingsStream = new ClosableTransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
       const groups = new GroupsState(
         operation,
         this.mediatorBindingsAggregatorFactory,
@@ -89,7 +90,11 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       output.bindingsStream.on('data', (bindings) => {
         groups.consumeBindings(bindings).catch(reject);
       });
-    }), { autoStart: false });
+    }), {
+      autoStart: false,
+      // Stop consuming the input once the groups are no longer needed, e.g., when the query is aborted
+      onClose: () => output.bindingsStream.destroy(),
+    });
 
     return {
       type: 'bindings',

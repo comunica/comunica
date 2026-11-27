@@ -49,6 +49,7 @@
     "@comunica/types": "^5.5.1",
     "@comunica/utils-algebra": "^5.5.0",
     "@comunica/utils-bindings-factory": "^5.5.1",
+    "@comunica/utils-iterator": "^5.0.0",
     "@comunica/utils-query-operation": "^5.5.1",
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0"
