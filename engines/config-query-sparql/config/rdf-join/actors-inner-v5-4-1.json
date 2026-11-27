@@ -69,7 +69,6 @@
       "@type": "ActorRdfJoinHash",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" },
-      "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" },
       "canHandleUndefs": false
     },
     {
@@ -77,7 +76,6 @@
       "@type": "ActorRdfJoinHash",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorHashBindings": { "@id": "urn:comunica:default:hash-bindings/mediators#main" },
-      "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" },
       "canHandleUndefs": true
     },
     {
