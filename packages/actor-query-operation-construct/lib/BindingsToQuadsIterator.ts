@@ -97,20 +97,75 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
 
   /**
    * Convert the given template to a list of quads based on the given bindings.
+   * Patterns with an unbound variable are skipped.
    * @param {Bindings}    bindings           A bindings object.
    * @param {RDF.Quad[]}  template           A list of quad patterns.
    * @param               blankNodeCounter   A counter value for the blank node.
    * @return {RDF.Quad[]}                    A list of quads.
    */
   public bindTemplate(bindings: Bindings, template: RDF.BaseQuad[], blankNodeCounter: number): RDF.Quad[] {
-    const quads: RDF.BaseQuad[] = <RDF.BaseQuad[]> template
-      // Make sure the multiple instantiations of the template contain different blank nodes, as required by SPARQL 1.1.
-      .map(BindingsToQuadsIterator.localizeQuad.bind(null, this.dataFactory, blankNodeCounter))
-      // Bind variables to bound terms
-      .map(pattern => BindingsToQuadsIterator.bindQuad(bindings, pattern))
-      // Remove quads that contained unbound terms, i.e., variables.
-      .filter(Boolean);
-    return <RDF.Quad[]> quads;
+    const quads: RDF.Quad[] = [];
+    for (const pattern of template) {
+      const quad = this.instantiatePattern(bindings, pattern, blankNodeCounter);
+      if (quad) {
+        quads.push(quad);
+      }
+    }
+    return quads;
+  }
+
+  /**
+   * Localize the blank nodes and bind the variables of a template pattern in one pass, including in quoted triples.
+   * @param {Bindings}     bindings         A bindings object.
+   * @param {RDF.BaseQuad} pattern          A template quad pattern.
+   * @param                blankNodeCounter A counter value for the blank nodes.
+   * @return {RDF.Quad}                     The instantiated quad, or undefined at the first unbound variable.
+   */
+  protected instantiatePattern(
+    bindings: Bindings,
+    pattern: RDF.BaseQuad,
+    blankNodeCounter: number,
+  ): RDF.Quad | undefined {
+    const subject = this.instantiateTerm(bindings, pattern.subject, blankNodeCounter);
+    if (!subject) {
+      return;
+    }
+    const predicate = this.instantiateTerm(bindings, pattern.predicate, blankNodeCounter);
+    if (!predicate) {
+      return;
+    }
+    const object = this.instantiateTerm(bindings, pattern.object, blankNodeCounter);
+    if (!object) {
+      return;
+    }
+    const graph = this.instantiateTerm(bindings, pattern.graph, blankNodeCounter);
+    if (!graph) {
+      return;
+    }
+    return this.dataFactory.quad(
+      <RDF.Quad_Subject> subject,
+      <RDF.Quad_Predicate> predicate,
+      <RDF.Quad_Object> object,
+      <RDF.Quad_Graph> graph,
+    );
+  }
+
+  /**
+   * Localize a template blank node, bind a variable, or instantiate a quoted triple.
+   * Bound values are not localized, so blank nodes from the bindings keep their label.
+   * @param {Bindings} bindings         A bindings object.
+   * @param {RDF.Term} term             A term of a template pattern.
+   * @param            blankNodeCounter A counter value for the blank nodes.
+   * @return {RDF.Term}                 The instantiated term, or undefined if it is an unbound variable.
+   */
+  protected instantiateTerm(bindings: Bindings, term: RDF.Term, blankNodeCounter: number): RDF.Term | undefined {
+    if (term.termType === 'Quad') {
+      return this.instantiatePattern(bindings, term, blankNodeCounter);
+    }
+    return BindingsToQuadsIterator.bindTerm(
+      bindings,
+      BindingsToQuadsIterator.localizeBlankNode(this.dataFactory, blankNodeCounter, term),
+    );
   }
 
   public override _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
