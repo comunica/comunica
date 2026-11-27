@@ -287,7 +287,7 @@ describe('inScopeVariables', () => {
     expect(inScopeVariables(distinctTerms)).toEqual([ DF.variable('s'), DF.variable('g') ]);
   });
 
-  it('returns the variables of nodes nested in other operations once', () => {
+  it('returns the variables of nested nodes once, and not those of the right-hand side of a minus', () => {
     const operation = AF.createMinus(
       AF.createJoin([ pattern, AF.createNodes(DF.variable('g'), DF.variable('s')) ]),
       AF.createNodes(DF.variable('g'), DF.variable('hidden')),

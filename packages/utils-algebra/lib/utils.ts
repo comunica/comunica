@@ -460,40 +460,29 @@ export function getSubOperations(operation: Operation): Operation[] {
 
 /**
  * Detects all in-scope variables, including those bound by the operation types Comunica adds to the algebra.
- * @param {Operation} op Input algebra tree.
- * @param visitor the visitor to be used to traverse the various nodes.
- *        Allows you to provide a visitor with different default preVisitor cotexts.
- * @returns {RDF.Variable[]} List of unique in-scope variables.
+ * @param op Input algebra tree.
+ * @param visitor The visitor traversing the operations, allowing different default pre-visitor contexts.
+ * @return List of unique in-scope variables.
  */
 export const inScopeVariables: typeof algebraUtils.inScopeVariables =
   (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] => {
+    // Traqula does not know the Comunica operation types, so the variables they bind are collected separately
     const comunicaTypesVariables: RDF.Variable[] = [];
-    const comunicaTypesCallBacks = boundVariablesCallBacks(variable => comunicaTypesVariables.push(variable));
+    const comunicaTypesCallBacks: Required<Pick<Parameters<typeof visitOperation>[1], TypesComunica>> = {
+      [TypesComunica.NODES]: { visitor(nodes) {
+        algebraUtils.forEachTermVariable(nodes.graph, variable => comunicaTypesVariables.push(variable));
+        comunicaTypesVariables.push(nodes.variable);
+      } },
+      [TypesComunica.DISTINCT_TERMS]: { visitor(distinctTerms) {
+        comunicaTypesVariables.push(...distinctTerms.variables);
+      } },
+    };
     const variables = algebraUtils.inScopeVariables(op, (startObject, nodeCallBacks) =>
-      visitor(startObject, { ...ignoreDefaultKeys(nodeCallBacks), ...comunicaTypesCallBacks }));
-    return uniqTerms([ ...variables, ...comunicaTypesVariables ]);
+      visitor(startObject, Object.assign(ignoreDefaultKeys(nodeCallBacks), comunicaTypesCallBacks)));
+    return comunicaTypesVariables.length === 0 ? variables : uniqTerms([ ...variables, ...comunicaTypesVariables ]);
   };
 
 type VisitCallBacks = Parameters<typeof algebraUtils.visitOperation>[1];
-
-/**
- * Visitor callbacks passing the variables bound by the operation types Comunica adds to the algebra.
- * @param addVariable Called with each bound variable.
- * @return The callbacks per Comunica operation type.
- */
-function boundVariablesCallBacks(addVariable: (variable: RDF.Variable) => void): VisitCallBacks {
-  return <VisitCallBacks> {
-    [TypesComunica.NODES]: { visitor(nodes: Nodes) {
-      algebraUtils.forEachTermVariable(nodes.graph, addVariable);
-      addVariable(nodes.variable);
-    } },
-    [TypesComunica.DISTINCT_TERMS]: { visitor(distinctTerms: DistinctTerms) {
-      for (const variable of distinctTerms.variables) {
-        addVariable(variable);
-      }
-    } },
-  };
-}
 
 /**
  * Make the pre-visitors of the given callbacks ignore the keys of the default object context on top of their own.
