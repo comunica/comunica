@@ -4047,6 +4047,11 @@ assert-plus@1.0.0, assert-plus@^1.0.0:
   resolved "https://registry.yarnpkg.com/assert-plus/-/assert-plus-1.0.0.tgz#f12e0f3c5d77b0b1cdd9146942e4e96c1e4dd525"
   integrity sha512-NfJ4UzBCcQGLDlQq7nHxH+tv3kyZ0hHQqF5BO6J7tNJeP5do1llPr8dZ8zHonfhAu0PHAdMkSo+8o0wxg9lZWw==
 
+async-sema@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/async-sema/-/async-sema-3.1.1.tgz#e527c08758a0f8f6f9f15f799a173ff3c40ea808"
+  integrity sha512-tLRNUXati5MFePdAk8dw7Qt7DpxPB60ofAgn8WRhW6a2rcimZnYBP9oxHiv0OHy+Wz7kPMG+t4LGdt31+4EmGg==
+
 async@3.2.6:
   version "3.2.6"
   resolved "https://registry.yarnpkg.com/async/-/async-3.2.6.tgz#1b0728e14929d51b85b449b7f06e27c1145e38ce"
@@ -6631,6 +6636,11 @@ exponential-backoff@^3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/exponential-backoff/-/exponential-backoff-3.1.1.tgz"
   integrity sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==
+
+exponential-backoff@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/exponential-backoff/-/exponential-backoff-3.1.3.tgz#51cf92c1c0493c766053f9d3abee4434c244d2f6"
+  integrity sha512-ZgEeZXj30q+I0EN+CbSSpIyPaJ5HVQD18Z1m+u1FXbAeT94mr1zw50q4q6jiiC447Nl/YTcIYSAftiGqetwXCA==
 
 express-rate-limit@5.5.1:
   version "5.5.1"
@@ -11954,17 +11964,19 @@ rdf-test-suite@^2.1.4:
     stream-to-string "^1.1.0"
     streamify-string "^1.0.1"
 
-rdf-test-suite@^2.9.0:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.9.0.tgz#8ba9927b9511ff4e3840bce2fba955e2591f3335"
-  integrity sha512-ZB7UWt1etvtdQWzRKk5LJ3I3CgASCMfGCST1newoYPHrs6I9ARj7lh9THCW8aD+x6FHyBzJVRDopBQIHnmcsXg==
+rdf-test-suite@^2.10.0:
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.10.0.tgz#bcf5f2c2162f58c3cf4923477ca0abeb09bc24a5"
+  integrity sha512-9/7B+6p5vq1/ab2YmpbWjZL3nvpTC3xB3PoC6KW/aR92LxVJEJRR7LFwLj7kWykZlZfyZxkOEJnB6hhS8qhMNQ==
   dependencies:
     "@types/json-stable-stringify" "^1.0.32"
     "@types/minimist" "^1.2.0"
     "@types/n3" "^1.10.3"
     "@types/sax" "^1.0.1"
     arrayify-stream "^3.0.0"
+    async-sema "^3.1.1"
     cross-fetch "^4.0.0"
+    exponential-backoff "^3.1.3"
     is-stream "^2.0.0"
     json-stable-stringify "^1.0.1"
     jsonld-context-parser "^3.1.0"
