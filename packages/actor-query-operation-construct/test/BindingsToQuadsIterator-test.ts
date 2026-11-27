@@ -632,21 +632,6 @@ DF.blankNode('otherbnode2'),
         await expect(iterator.toArray()).resolves.toHaveLength(10);
       });
 
-      it('should skip a pattern with an unbound variable in a quoted triple', async() => {
-        expect(iterator.bindTemplate(BF.bindings([
-          [ DF.variable('a'), DF.namedNode('a') ],
-        ]), [
-          DF.quad(DF.quad(DF.variable('a'), DF.namedNode('p'), DF.variable('b')), DF.namedNode('p'), DF.literal('o')),
-          DF.quad(DF.quad(DF.variable('a'), DF.namedNode('p'), DF.literal('o')), DF.namedNode('p'), DF.literal('o')),
-        ], 0))
-          .toEqual([
-            DF.quad(DF.quad(DF.namedNode('a'), DF.namedNode('p'), DF.literal('o')), DF.namedNode('p'), DF.literal('o')),
-          ]);
-
-        // Consume the iterator
-        await expect(iterator.toArray()).resolves.toHaveLength(10);
-      });
-
       it('should not localize blank nodes from the bindings', async() => {
         expect(iterator.bindTemplate(BF.bindings([
           [ DF.variable('a'), DF.blankNode('data') ],

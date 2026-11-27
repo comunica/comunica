@@ -108,7 +108,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
       // Make sure the multiple instantiations of the template contain different blank nodes, as required by SPARQL 1.1.
       .map(BindingsToQuadsIterator.localizeQuad.bind(null, this.dataFactory, blankNodeCounter))
       // Bind variables to bound terms
-      .map(x => BindingsToQuadsIterator.bindQuad.bind(null, bindings)(x))
+      .map(pattern => BindingsToQuadsIterator.bindQuad(bindings, pattern))
       // Remove quads that contained unbound terms, i.e., variables.
       .filter(Boolean);
     return <RDF.Quad[]> quads;
