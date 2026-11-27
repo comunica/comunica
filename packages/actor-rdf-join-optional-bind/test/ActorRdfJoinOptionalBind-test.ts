@@ -287,18 +287,22 @@ IQueryOperationResultBindings
         });
       });
 
-      it('should reject on a right stream of type extend', async() => {
+      it('should reject on a right stream of type extend that assigns a bound variable', async() => {
         await expect(actor.getJoinCoefficients(
           {
             type: 'optional',
             entries: [
               {
                 output: <any>{},
-                operation: <any>{},
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o')),
               },
               {
                 output: <any>{},
-                operation: <any>{ type: Algebra.Types.EXTEND },
+                operation: FACTORY.createExtend(
+                  FACTORY.createPattern(DF.variable('b'), DF.namedNode('p'), DF.namedNode('o')),
+                  DF.variable('a'),
+                  FACTORY.createTermExpression(DF.variable('b')),
+                ),
               },
             ],
             context,
@@ -327,7 +331,7 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
+        )).resolves.toFailTest('Actor actor can not bind on Group, or conflicting Extend/LeftJoin/Minus operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -370,7 +374,7 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
+        )).resolves.toFailTest('Actor actor can not bind on Group, or conflicting Extend/LeftJoin/Minus operations');
       });
 
       it('should reject on a right stream containing extend wrapped in a project', async() => {
@@ -380,11 +384,18 @@ IQueryOperationResultBindings
             entries: [
               {
                 output: <any>{},
-                operation: <any>{},
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o')),
               },
               {
                 output: <any>{},
-                operation: FACTORY.createProject(<any>{ type: Algebra.Types.EXTEND }, []),
+                operation: FACTORY.createProject(
+                  FACTORY.createExtend(
+                    FACTORY.createPattern(DF.variable('b'), DF.namedNode('p'), DF.namedNode('o')),
+                    DF.variable('a'),
+                    FACTORY.createTermExpression(DF.variable('b')),
+                  ),
+                  [],
+                ),
               },
             ],
             context,
@@ -413,7 +424,7 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
+        )).resolves.toFailTest('Actor actor can not bind on Group, or conflicting Extend/LeftJoin/Minus operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
@@ -549,7 +560,7 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
+        )).resolves.toFailTest('Actor actor can not bind on Group, or conflicting Extend/LeftJoin/Minus operations');
       });
 
       it('should allow binding on a right stream with safe MINUS', async() => {
@@ -638,7 +649,7 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
+        )).resolves.toFailTest('Actor actor can not bind on Group, or conflicting Extend/LeftJoin/Minus operations');
       });
 
       it('should allow binding on a right stream with safe FILTER', async() => {
@@ -727,7 +738,7 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
+        )).resolves.toFailTest('Actor actor can not bind on Group, or conflicting Extend/LeftJoin/Minus operations');
       });
     });
 

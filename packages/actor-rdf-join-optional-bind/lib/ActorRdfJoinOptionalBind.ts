@@ -124,7 +124,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     const boundVariables = inScopeVariables(action.entries[0].operation);
     const bindOperation = ActorRdfJoinOptionalBind.getBindOperation(action);
     if (!ActorRdfJoinMultiBind.canBindWithOperation(bindOperation, boundVariables)) {
-      return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus operations`);
+      return failTest(`Actor ${this.name} can not bind on Group, or conflicting Extend/LeftJoin/Minus operations`);
     }
 
     // Determine selectivity of join
