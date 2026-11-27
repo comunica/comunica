@@ -7,6 +7,11 @@ as an index nested loop join.
 
 This actor only applies to sources that can look up operations synchronously (`IQuerySource#queryBindingsSynchronous`).
 
+If all lookups are over the same source that offers integer-encoded access to its quads (`IQuerySource#getEncodedAccess`),
+they are done over encoded terms, and the terms of each binding are only decoded once.
+In that case, this actor can also look up unions of patterns, and zero-or-more or one-or-more paths along a single predicate,
+and it does the lookup with the fewest matches first for every partial result.
+
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 
@@ -44,3 +49,5 @@ After installing, this package can be added to your engine's configuration as fo
 * `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
 * `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).
 * `lookupCost`: The cost of looking up a single bound operation, expressed in produced rows. _(defaults to `1`)_
+* `encodedLookups`: If lookups over a source that offers integer-encoded access to its quads, such as an ordered [rdf-stores](https://github.com/rubensworks/rdf-stores.js) store, are done over encoded terms. _(defaults to `true`)_
+* `encodedUnionAndPathLookups`: If unions of patterns and zero-or-more or one-or-more paths along a single predicate can be looked up over encoded terms, which lets this actor join them without binding them to every partial result. _(defaults to `true`)_

@@ -364,6 +364,7 @@ describe('QuerySourceHypermedia', () => {
           }),
           queryBindings: jest.fn(() => new ArrayIterator([], { autoStart: false })),
           queryBindingsSynchronous: jest.fn(() => [ BF.fromRecord({ s: DF.namedNode('s') }) ]),
+          getEncodedAccess: jest.fn(() => undefined),
         };
         sourceMetadata = { first: [], next: []};
         cachePolicy = undefined;
@@ -396,6 +397,23 @@ describe('QuerySourceHypermedia', () => {
         source.queryBindings(operation, context).destroy();
         await (<any> source).directSourceProbe;
       }
+
+      it('should have no encoded access before the first source is found', () => {
+        jest.spyOn(inner, 'getEncodedAccess').mockImplementation(() => 'ACCESS');
+        expect(directSource.getEncodedAccess(context)).toBeUndefined();
+      });
+
+      it('should delegate the encoded access to the first source', async() => {
+        jest.spyOn(inner, 'getEncodedAccess').mockImplementation(() => 'ACCESS');
+        await probe();
+        expect(directSource.getEncodedAccess(context)).toBe('ACCESS');
+      });
+
+      it('should have no encoded access if the first source has none', async() => {
+        delete inner.getEncodedAccess;
+        await probe();
+        expect(directSource.getEncodedAccess(context)).toBeUndefined();
+      });
 
       it('should keep synchronous lookups in the selector shape', async() => {
         await expect(directSource.getSelectorShape(context)).resolves

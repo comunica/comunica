@@ -89,6 +89,22 @@ describe('Bindings', () => {
       });
     });
 
+    describe('extend', () => {
+      it('should add entries', () => {
+        const bindingsNew = bindings.extend([ 'x', 'y' ], [ DF.namedNode('x'), DF.namedNode('y') ]);
+        expect(bindingsNew.get('x')).toEqual(DF.namedNode('x'));
+        expect(bindingsNew.get('y')).toEqual(DF.namedNode('y'));
+        expect(bindingsNew.size).toBe(bindings.size + 2);
+        expect(bindings.has('x')).toBe(false);
+      });
+
+      it('should add a given number of entries', () => {
+        const bindingsNew = bindings.extend([ 'x', 'y' ], [ DF.namedNode('x'), DF.namedNode('y') ], 1);
+        expect(bindingsNew.get('x')).toEqual(DF.namedNode('x'));
+        expect(bindingsNew.has('y')).toBe(false);
+      });
+    });
+
     describe('delete', () => {
       it('should not do anything on a non-existing variable', () => {
         const bindingsNew = bindings.delete(DF.variable('d'));

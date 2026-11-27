@@ -7,6 +7,7 @@ import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { EncodedQuadAccessSkolemized } from '../lib/EncodedQuadAccessSkolemized';
 import { QuerySourceSkolemized } from '../lib/QuerySourceSkolemized';
 import '@comunica/utils-jest';
 import 'jest-rdf';
@@ -21,6 +22,7 @@ describe('QuerySourceSkolemized', () => {
 
   beforeEach(() => {
     sourceInner = {
+      getEncodedAccess: jest.fn(() => undefined),
       getFilterFactor: <any> jest.fn(() => 1),
       getSelectorShape: <any> jest.fn(() => 'SHAPE'),
       queryBindings: <any> jest.fn(() => {
@@ -386,5 +388,24 @@ describe('QuerySourceSkolemized', () => {
   it('should delegate toString', async() => {
     expect(source.toString()).toBe(`STR(SkolemID:0)`);
     expect(sourceInner.toString).toHaveBeenCalledTimes(1);
+  });
+
+  describe('getEncodedAccess', () => {
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+
+    it('should not have an encoded access if the inner source has none', () => {
+      delete sourceInner.getEncodedAccess;
+      expect(source.getEncodedAccess(context)).toBeUndefined();
+      expect(source.getEncodedAccess(context)).toBeUndefined();
+    });
+
+    it('should wrap the encoded access of the inner source, once', () => {
+      const access = { encoding: {}, encode: jest.fn(), decode: jest.fn(), prepareLookup: jest.fn() };
+      jest.spyOn(sourceInner, 'getEncodedAccess').mockImplementation(() => access);
+      const wrapped = source.getEncodedAccess(context);
+      expect(wrapped).toBeInstanceOf(EncodedQuadAccessSkolemized);
+      expect(source.getEncodedAccess(context)).toBe(wrapped);
+      expect(sourceInner.getEncodedAccess).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -5,6 +5,7 @@ import type {
   ComunicaDataFactory,
   FragmentSelectorShape,
   IActionContext,
+  IEncodedQuadAccess,
   IQueryBindingsOptions,
   IQuerySource,
   QuerySourceReference,
@@ -14,6 +15,7 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
+import { EncodedQuadAccessSkolemized } from './EncodedQuadAccessSkolemized';
 import {
   deskolemizeOperation,
   deskolemizePattern,
@@ -35,6 +37,10 @@ export class QuerySourceSkolemized implements IQuerySource {
    * ID of the inner source, see KeysQuerySourceIdentify.sourceIds.
    */
   public readonly sourceId: string;
+  /**
+   * The encoded access, null if the inner source has none, and undefined if not determined yet.
+   */
+  private encodedAccess: IEncodedQuadAccess | null | undefined;
 
   public constructor(innerSource: IQuerySource, sourceId: string) {
     this.innerSource = innerSource;
@@ -60,6 +66,16 @@ export class QuerySourceSkolemized implements IQuerySource {
 
   public canContainBlankNodes(): boolean {
     return this.innerSource.canContainBlankNodes?.() !== false;
+  }
+
+  public getEncodedAccess(context: IActionContext): IEncodedQuadAccess | undefined {
+    if (this.encodedAccess === undefined) {
+      const inner = this.innerSource.getEncodedAccess?.(context);
+      this.encodedAccess = inner ?
+        new EncodedQuadAccessSkolemized(inner, this.sourceId, context.getSafe(KeysInitQuery.dataFactory)) :
+        null;
+    }
+    return this.encodedAccess ?? undefined;
   }
 
   public queryBindings(

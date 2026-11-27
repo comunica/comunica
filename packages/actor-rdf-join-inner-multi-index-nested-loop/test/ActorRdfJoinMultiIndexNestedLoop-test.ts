@@ -21,6 +21,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
 import type { IActorRdfJoinMultiIndexNestedLoopTestSideData } from '../lib/ActorRdfJoinMultiIndexNestedLoop';
 import { ActorRdfJoinMultiIndexNestedLoop } from '../lib/ActorRdfJoinMultiIndexNestedLoop';
+import { EncodedIndexNestedLoopIterator } from '../lib/EncodedIndexNestedLoopIterator';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -47,6 +48,8 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       mediatorJoinSelectivity,
       mediatorMergeBindingsContext,
       lookupCost: 1,
+      encodedLookups: false,
+      encodedUnionAndPathLookups: false,
     });
     store = RdfStore.createDefault();
     for (const [ s, p, o ] of [
@@ -387,6 +390,212 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       const sideData = (await actor.test(action)).getSideData();
       const result = await actor.run(action, <any> { ...sideData, cardinality: 1_000 });
       await expect(result.metadata()).resolves.toMatchObject({ cardinality: { type: 'estimate', value: 2 }});
+    });
+  });
+
+  describe('with encoded lookups', () => {
+    let ordered: IQuerySourceWrapper;
+
+    beforeEach(() => {
+      actor = new ActorRdfJoinMultiIndexNestedLoop({
+        name: 'actor',
+        bus,
+        mediatorJoinSelectivity,
+        mediatorMergeBindingsContext,
+        lookupCost: 1,
+        encodedLookups: true,
+        encodedUnionAndPathLookups: true,
+      });
+      store = RdfStore.createOrdered();
+      for (const [ s, p, o ] of [
+        [ 'ex:review1', 'ex:reviewFor', 'ex:product' ],
+        [ 'ex:review2', 'ex:reviewFor', 'ex:product' ],
+        [ 'ex:review1', 'ex:reviewer', 'ex:person1' ],
+        [ 'ex:review2', 'ex:reviewer', 'ex:person2' ],
+        [ 'ex:person1', 'ex:name', 'ex:name1' ],
+        [ 'ex:person2', 'ex:knows', 'ex:person1' ],
+      ]) {
+        store.addQuad(DF.quad(DF.namedNode(s), DF.namedNode(p), DF.namedNode(o)));
+      }
+      ordered = { source: new QuerySourceRdfJs(store, DF, BF) };
+    });
+
+    function encodedEntry(operation: Algebra.Operation, meta: MetadataBindings, modified = false): IJoinEntry {
+      return {
+        operation,
+        ...modified ? { operationModified: true } : {},
+        output: {
+          type: 'bindings',
+          bindingsStream: new ArrayIterator(
+            operation.type === 'pattern' ?
+              store.getBindings(
+                BF,
+                (<Algebra.Pattern> operation).subject,
+                (<Algebra.Pattern> operation).predicate,
+                (<Algebra.Pattern> operation).object,
+                DF.defaultGraph(),
+              ) :
+                [],
+            { autoStart: false },
+          ),
+          metadata: async() => meta,
+        },
+      };
+    }
+
+    function knowsPath(): Algebra.Path {
+      return AF.createPath(
+        DF.variable('reviewer'),
+        AF.createZeroOrMorePath(assignOperationSource(AF.createLink(DF.namedNode('ex:knows')), ordered)),
+        DF.variable('friend'),
+      );
+    }
+
+    function union(...inputs: Algebra.Pattern[]): Algebra.Union {
+      return AF.createUnion(inputs);
+    }
+
+    it('should join patterns over encoded terms, scanning the first entry', async() => {
+      const entries = [
+        encodedEntry(pattern('?review', 'ex:reviewer', '?reviewer', ordered), metadata(2, [ 'review', 'reviewer' ])),
+        encodedEntry(pattern('?review', 'ex:reviewFor', 'ex:product', ordered), metadata(2, [ 'review' ])),
+        encodedEntry(pattern('?reviewer', 'ex:name', '?name', ordered), metadata(1, [ 'reviewer', 'name' ])),
+      ];
+      const action: IActionRdfJoin = { type: 'inner', entries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      expect(result.bindingsStream).toBeInstanceOf(EncodedIndexNestedLoopIterator);
+      await expect(result.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('review'), DF.namedNode('ex:review1') ],
+          [ DF.variable('reviewer'), DF.namedNode('ex:person1') ],
+          [ DF.variable('name'), DF.namedNode('ex:name1') ],
+        ]),
+      ]);
+    });
+
+    it('should scan a first entry within the context of its source', async() => {
+      const withContext = { source: ordered.source, context: new ActionContext({}) };
+      const entries = [
+        encodedEntry(
+          pattern('?review', 'ex:reviewer', '?reviewer', withContext),
+          metadata(2, [ 'review', 'reviewer' ]),
+        ),
+        encodedEntry(pattern('?review', 'ex:reviewFor', 'ex:product', ordered), metadata(2, [ 'review' ])),
+      ];
+      const action: IActionRdfJoin = { type: 'inner', entries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      await expect(result.bindingsStream.toArray()).resolves.toHaveLength(2);
+    });
+
+    it('should join the bindings of a modified first entry over encoded terms', async() => {
+      const entries = [
+        encodedEntry(
+          pattern('?review', 'ex:reviewer', '?reviewer', ordered),
+          metadata(2, [ 'review', 'reviewer' ]),
+          true,
+        ),
+        encodedEntry(pattern('?review', 'ex:reviewFor', 'ex:product', ordered), metadata(2, [ 'review' ])),
+      ];
+      const action: IActionRdfJoin = { type: 'inner', entries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      expect(result.bindingsStream).toBeInstanceOf(EncodedIndexNestedLoopIterator);
+      await expect(result.bindingsStream.toArray()).resolves.toHaveLength(2);
+    });
+
+    it('should join over bindings if lookups can not be done over encoded terms', async() => {
+      const entries = [
+        encodedEntry(pattern('?review', 'ex:reviewer', '?reviewer', ordered), metadata(2, [ 'review', 'reviewer' ])),
+        encodedEntry(
+          assignOperationSource(
+            AF.createPattern(
+              DF.variable('review'),
+              DF.namedNode('ex:reviewFor'),
+              DF.variable('product'),
+              DF.variable('g'),
+            ),
+            ordered,
+          ),
+          metadata(2, [ 'review', 'product', 'g' ]),
+        ),
+      ];
+      const action: IActionRdfJoin = { type: 'inner', entries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      expect(result.bindingsStream).not.toBeInstanceOf(EncodedIndexNestedLoopIterator);
+    });
+
+    it('should not join over encoded terms if disabled', async() => {
+      actor = new ActorRdfJoinMultiIndexNestedLoop({
+        name: 'actor',
+        bus,
+        mediatorJoinSelectivity,
+        mediatorMergeBindingsContext,
+        lookupCost: 1,
+        encodedLookups: false,
+        encodedUnionAndPathLookups: true,
+      });
+      const entries = [
+        encodedEntry(pattern('?review', 'ex:reviewer', '?reviewer', ordered), metadata(2, [ 'review', 'reviewer' ])),
+        encodedEntry(pattern('?review', 'ex:reviewFor', 'ex:product', ordered), metadata(2, [ 'review' ])),
+      ];
+      const action: IActionRdfJoin = { type: 'inner', entries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      expect(result.bindingsStream).not.toBeInstanceOf(EncodedIndexNestedLoopIterator);
+    });
+
+    it('should look up unions and paths over encoded terms', async() => {
+      const entries = [
+        encodedEntry(pattern('?review', 'ex:reviewFor', 'ex:product', ordered), metadata(2, [ 'review' ])),
+        encodedEntry(union(
+          pattern('?review', 'ex:reviewer', '?reviewer', ordered),
+          pattern('?review', 'ex:author', '?reviewer', ordered),
+        ), metadata(2, [ 'review', 'reviewer' ])),
+        encodedEntry(knowsPath(), metadata(10, [ 'reviewer', 'friend' ])),
+      ];
+      const action: IActionRdfJoin = { type: 'inner', entries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      expect(result.bindingsStream).toBeInstanceOf(EncodedIndexNestedLoopIterator);
+      await expect(result.bindingsStream.toArray()).resolves.toHaveLength(3);
+    });
+
+    it('should fail if unions and paths can not be looked up over encoded terms in any order', async() => {
+      const entries = [
+        encodedEntry(pattern('?review', 'ex:reviewFor', 'ex:product', ordered), metadata(2, [ 'review' ])),
+        encodedEntry(union(
+          pattern('?review', 'ex:reviewer', '?reviewer', ordered),
+          pattern('?review', 'ex:author', '?other', ordered),
+        ), metadata(2, [ 'review', 'reviewer' ])),
+        encodedEntry(union(
+          pattern('?review', 'ex:reviewer', '?x', ordered),
+          pattern('?review', 'ex:author', '?y', ordered),
+        ), metadata(2, [ 'review', 'x' ])),
+      ];
+      await expect(actor.test({ type: 'inner', entries, context })).resolves
+        .toFailTest('Actor actor can not look up unions or paths in any order over encoded terms');
+    });
+
+    it('should not look up unions and paths if disabled', async() => {
+      actor = new ActorRdfJoinMultiIndexNestedLoop({
+        name: 'actor',
+        bus,
+        mediatorJoinSelectivity,
+        mediatorMergeBindingsContext,
+        lookupCost: 1,
+        encodedLookups: true,
+        encodedUnionAndPathLookups: false,
+      });
+      await expect(actor.canLookUpEncodedOnly(encodedEntry(knowsPath(), metadata(1, [])), context)).resolves
+        .toBe(false);
+    });
+
+    it('should only look up unmodified unions and paths over sources with encoded access', async() => {
+      await expect(actor.canLookUpEncodedOnly(encodedEntry(knowsPath(), metadata(1, [])), context)).resolves.toBe(true);
+      await expect(actor.canLookUpEncodedOnly(encodedEntry(knowsPath(), metadata(1, []), true), context)).resolves
+        .toBe(false);
+      await expect(actor.canLookUpEncodedOnly(encodedEntry(AF.createBgp([]), metadata(1, [])), context)).resolves
+        .toBe(false);
+      ordered = { source: new QuerySourceRdfJs(RdfStore.createDefault(), DF, BF), context: new ActionContext({}) };
+      await expect(actor.canLookUpEncodedOnly(encodedEntry(knowsPath(), metadata(1, [])), context)).resolves
+        .toBe(false);
     });
   });
 });

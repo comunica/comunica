@@ -1,4 +1,5 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
+import { EncodedIndexNestedLoopIterator } from '@comunica/actor-rdf-join-inner-multi-index-nested-loop';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
@@ -40,6 +41,7 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
       mediatorJoinSelectivity,
       mediatorMergeBindingsContext,
       selectivityModifier: 0.1,
+      encodedLookups: false,
     });
     store = RdfStore.createDefault();
     for (const [ s, p, o ] of [
@@ -273,6 +275,52 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
       ]);
       expect(queryBindingsSynchronous)
         .toHaveBeenCalledWith(expect.anything(), context.merge(new ActionContext({ x: 'y' })));
+    });
+  });
+
+  describe('with encoded lookups', () => {
+    beforeEach(() => {
+      actor = new ActorRdfJoinOptionalIndexNestedLoop({
+        name: 'actor',
+        bus,
+        mediatorJoinSelectivity,
+        mediatorMergeBindingsContext,
+        selectivityModifier: 0.1,
+        encodedLookups: true,
+      });
+      const ordered = RdfStore.createOrdered();
+      ordered.addQuads(store.getQuads());
+      store = ordered;
+      source = { source: new QuerySourceRdfJs(store, DF, BF) };
+    });
+
+    it('should keep left bindings without right results', async() => {
+      const action: IActionRdfJoin = { type: 'optional', entries: entries(), context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      expect(result.bindingsStream).toBeInstanceOf(EncodedIndexNestedLoopIterator);
+      await expect(result.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('review'), DF.namedNode('ex:review1') ],
+          [ DF.variable('rating'), DF.namedNode('ex:rating1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('review'), DF.namedNode('ex:review2') ],
+        ]),
+      ]);
+    });
+
+    it('should not join over encoded terms if disabled', async() => {
+      actor = new ActorRdfJoinOptionalIndexNestedLoop({
+        name: 'actor',
+        bus,
+        mediatorJoinSelectivity,
+        mediatorMergeBindingsContext,
+        selectivityModifier: 0.1,
+        encodedLookups: false,
+      });
+      const action: IActionRdfJoin = { type: 'optional', entries: entries(), context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      expect(result.bindingsStream).not.toBeInstanceOf(EncodedIndexNestedLoopIterator);
     });
   });
 });

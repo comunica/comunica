@@ -8,6 +8,7 @@ import type {
   ComunicaDataFactory,
   FragmentSelectorShape,
   IActionContext,
+  IEncodedQuadAccess,
   IQuerySource,
   MetadataVariable,
   QuerySourceReference,
@@ -20,6 +21,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
 import type { QuadTermName } from 'rdf-terms';
 import { filterTermsNested, QUAD_TERM_NAMES, someTerms, someTermsNested, uniqTerms } from 'rdf-terms';
+import { EncodedQuadAccessRdfStore } from './EncodedQuadAccessRdfStore';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 /**
@@ -83,6 +85,10 @@ export class QuerySourceRdfJs implements IQuerySource {
    * execution is garbage-collected, and are never reused across query executions.
    */
   private readonly cardinalityCache = new WeakMap<object, Map<string, number>>();
+  /**
+   * The encoded access to the source, null if it does not support one, and undefined if not determined yet.
+   */
+  private encodedAccess: IEncodedQuadAccess | null | undefined;
 
   public constructor(
     source: RDF.Source | RDF.DatasetCore,
@@ -334,6 +340,13 @@ export class QuerySourceRdfJs implements IQuerySource {
       );
     }
     return operation;
+  }
+
+  public getEncodedAccess(): IEncodedQuadAccess | undefined {
+    if (this.encodedAccess === undefined) {
+      this.encodedAccess = EncodedQuadAccessRdfStore.wrap(this.source) ?? null;
+    }
+    return this.encodedAccess ?? undefined;
   }
 
   public canContainBlankNodes(): boolean {
