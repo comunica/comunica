@@ -41,6 +41,10 @@ export interface IPublicPackage {
   name: string;
   version: string;
   dir: string;
+  /**
+   * The names of the packages that installing this package requires.
+   */
+  dependencies: string[];
 }
 
 /**
@@ -127,6 +131,14 @@ export function isRateLimitError(stderr: string): boolean {
 }
 
 /**
+ * Check if npm temporarily refuses one-time passwords, after too many attempts.
+ * @param stderr The stderr output of an npm command.
+ */
+export function isOtpRateLimitError(stderr: string): boolean {
+  return /rate limited otp/iu.test(stderr);
+}
+
+/**
  * Check if npm failed because of a missing, invalid or expired OTP.
  * @param stderr The stderr output of an npm command.
  */
@@ -165,7 +177,16 @@ export async function getPublicPackages(cwd: string): Promise<IPublicPackage[]> 
   const { packages } = await getPackages(cwd);
   return packages
     .filter((pkg: any) => !pkg.packageJson.private)
-    .map((pkg: any) => ({ name: pkg.packageJson.name, version: pkg.packageJson.version, dir: pkg.dir }));
+    .map((pkg: any) => ({
+      name: pkg.packageJson.name,
+      version: pkg.packageJson.version,
+      dir: pkg.dir,
+      dependencies: [ ...new Set([
+        ...Object.keys(pkg.packageJson.dependencies ?? {}),
+        ...Object.keys(pkg.packageJson.optionalDependencies ?? {}),
+        ...Object.keys(pkg.packageJson.peerDependencies ?? {}),
+      ]) ],
+    }));
 }
 
 /**

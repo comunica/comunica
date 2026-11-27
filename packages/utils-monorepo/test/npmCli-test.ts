@@ -5,6 +5,7 @@ import {
   assertNpmStageSupport,
   getPublicPackages,
   isOtpError,
+  isOtpRateLimitError,
   isRateLimitError,
   listStaged,
   npmEnv,
@@ -23,7 +24,18 @@ jest.mock<typeof import('node:readline')>('node:readline', () => <any> ({
 jest.mock<{ getPackages: () => Promise<any> }>('@manypkg/get-packages', () => ({
   getPackages: jest.fn(async() => ({
     packages: [
-      { dir: '/repo/packages/a', packageJson: { name: '@comunica/a', version: '1.0.0' }},
+      {
+        dir: '/repo/packages/a',
+        packageJson: {
+          name: '@comunica/a',
+          version: '1.0.0',
+          dependencies: { '@comunica/b': '^1.0.0', 'rdf-data-factory': '^2.0.0' },
+          optionalDependencies: { '@comunica/c': '^1.0.0' },
+          peerDependencies: { '@comunica/b': '^1.0.0' },
+          devDependencies: { '@comunica/d': '^1.0.0' },
+        },
+      },
+      { dir: '/repo/packages/e', packageJson: { name: '@comunica/e', version: '1.0.0' }},
       { dir: '/repo/packages/private', packageJson: { name: '@comunica/private', version: '1.0.0', private: true }},
     ],
   })),
@@ -54,6 +66,15 @@ describe('npmCli', () => {
       expect(isRateLimitError(E429)).toBe(true);
       expect(isRateLimitError('Could not authenticate x: rate limited otp')).toBe(true);
       expect(isRateLimitError(EOTP)).toBe(false);
+    });
+  });
+
+  describe('isOtpRateLimitError', () => {
+    it('should detect that npm refuses OTPs', () => {
+      const lockout = 'npm error 429 Too Many Requests - Could not authenticate x: rate limited otp';
+      expect(isOtpRateLimitError(lockout)).toBe(true);
+      expect(isOtpRateLimitError(E429)).toBe(false);
+      expect(isOtpRateLimitError(EOTP)).toBe(false);
     });
   });
 
@@ -199,7 +220,13 @@ describe('npmCli', () => {
   describe('getPublicPackages', () => {
     it('should return the non-private packages', async() => {
       await expect(getPublicPackages('/repo')).resolves.toEqual([
-        { name: '@comunica/a', version: '1.0.0', dir: '/repo/packages/a' },
+        {
+          name: '@comunica/a',
+          version: '1.0.0',
+          dir: '/repo/packages/a',
+          dependencies: [ '@comunica/b', 'rdf-data-factory', '@comunica/c' ],
+        },
+        { name: '@comunica/e', version: '1.0.0', dir: '/repo/packages/e', dependencies: []},
       ]);
     });
   });

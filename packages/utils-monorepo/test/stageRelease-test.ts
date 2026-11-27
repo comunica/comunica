@@ -162,7 +162,8 @@ describe('stageRelease', () => {
       let calls = 0;
       const npm = fakeNpm([], () => ++calls === 1 ? E429 : OK);
       await expect(stageRelease(options(npm))).resolves.toBe(true);
-      expect(log).toHaveBeenCalledWith('npm is rate limiting, so waiting 1s before continuing (0/2 staged).');
+      expect(log).toHaveBeenCalledWith('npm is rate limiting (code E429 429 Too Many Requests - POST ' +
+        'https://registry.npmjs.org/-/stage/package/x), so waiting 1s before continuing (0/2 staged).');
       expect(wait).toHaveBeenCalledWith(1000);
       expect(npm).toHaveBeenCalledTimes(5);
       expect(log).toHaveBeenLastCalledWith('Staged 2 of 2 packages.');

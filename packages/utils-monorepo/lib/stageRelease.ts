@@ -105,7 +105,7 @@ export async function stageRelease(options: IStageReleaseOptions): Promise<boole
         queue.unshift(pkg);
         const delay = backoff.hit();
         if (delay !== undefined) {
-          log(`npm is rate limiting, so waiting ${delay / 1000}s before continuing (${staged}/${total} staged).`);
+          log(`npm is rate limiting (${npmErrorMessage(result.stderr)}), so waiting ${delay / 1000}s before continuing (${staged}/${total} staged).`);
         }
       } else if (isAlreadyStagedError(result.stderr)) {
         skipped.push(label);
