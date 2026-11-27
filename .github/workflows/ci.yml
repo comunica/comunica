@@ -82,8 +82,47 @@ jobs:
           parallel: true
           fail-on-error: false
 
+  speccache:
+    name: Specification test files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION_HIGHEST }}
+          cache: yarn
+      - name: Install dependencies and build
+        run: yarn install --frozen-lockfile --network-timeout 36000
+      - name: Load XPath test suite cache
+        id: cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .rdf-test-suite-cache
+          key: rdftestsuite-xpath-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: rdftestsuite-xpath-${{ secrets.CACHE_VERSION }}-
+          enableCrossOsArchive: true
+      # Fetch the thousands of files of the XPath test suite once, instead of in every specification test job at
+      # the same time, as GitHub Pages then refuses requests
+      - name: Fetch XPath test suite
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: nick-fields/retry@v4
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          command: yarn --cwd engines/expressions-sparql run spec:xpath
+      - name: Save XPath test suite cache
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .rdf-test-suite-cache
+          key: rdftestsuite-xpath-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          enableCrossOsArchive: true
+
   spectest:
     name: Specification tests
+    needs: speccache
     strategy:
       fail-fast: false
       matrix:
@@ -115,6 +154,13 @@ jobs:
             .rdf-test-suite-cache
             .rdf-test-suite-ldf-cache
           key: ${{ runner.os }}-rdftestsuite-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+      - name: Load XPath test suite cache
+        uses: actions/cache/restore@v6
+        with:
+          path: .rdf-test-suite-cache
+          key: rdftestsuite-xpath-${{ secrets.CACHE_VERSION }}-${{ hashFiles('yarn.lock') }}
+          enableCrossOsArchive: true
+          fail-on-cache-miss: true
       - name: Run specification tests
         uses: nick-fields/retry@v4
         with:
