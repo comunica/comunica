@@ -1964,7 +1964,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 0.75 },
+          cardinality: { type: 'estimate', value: 1 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
