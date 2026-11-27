@@ -13,6 +13,22 @@ const MANIFEST_URLS = [ 'manifest.ttl', 'extensions.ttl', 'errors.ttl' ]
   .map(manifest => `https://comunica.github.io/sparql-manifest-xpath-tests/${manifest}`);
 const CACHE_PATH = join(__dirname, '../../../.rdf-test-suite-cache/');
 
+// The test suite runner reports every failed request as not found, so keep track of what the server answered
+const failedStatuses = {};
+const fetchOriginal = globalThis.fetch;
+globalThis.fetch = async(input, init) => {
+  const response = await fetchOriginal(input, init);
+  if (!response.ok) {
+    failedStatuses[response.status] = (failedStatuses[response.status] ?? 0) + 1;
+  }
+  return response;
+};
+process.on('exit', () => {
+  for (const [ status, count ] of Object.entries(failedStatuses)) {
+    process.stderr.write(`${count} requests for test files were answered with status ${status}\n`);
+  }
+});
+
 /**
  * Run the XPath test suite on the engine given as argument, optionally filtered with --test-regex.
  * Known failures (see xpath-known-failures.js for why) are reported as skipped, and warned about once they pass.
