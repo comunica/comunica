@@ -60,7 +60,7 @@ describe('ActorQueryOperationNodes', () => {
     });
 
     describe('run', () => {
-      it('should rewrite operations into distinct-union-pattern', async() => {
+      it('should rewrite operations into distinct-project-union-pattern', async() => {
         jest.spyOn(mediatorQueryOperation, 'mediate');
         const source1 = <any>{};
         const opIn = assignOperationSource(
@@ -78,12 +78,12 @@ describe('ActorQueryOperationNodes', () => {
         ]);
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
           context: expect.any(ActionContext),
-          operation: AF.createDistinct(AF.createUnion([
+          operation: AF.createDistinct(AF.createProject(AF.createUnion([
             assignOperationSource(AF
               .createPattern(DF.variable('x'), DF.variable('__p'), DF.variable('__x'), DF.defaultGraph()), source1),
             assignOperationSource(AF
               .createPattern(DF.variable('__x'), DF.variable('__p'), DF.variable('x'), DF.defaultGraph()), source1),
-          ])),
+          ]), [ DF.variable('x') ])),
         });
       });
     });
