@@ -1,6 +1,11 @@
 import type * as RDF from '@rdfjs/types';
 import type { ComunicaDataFactory } from './ComunicaDataFactory';
-import type { ExistenceResolver, FunctionArgumentsCache } from './ExpressionEvaluator';
+import type {
+  ExistenceResolver,
+  ExtensionAggregator,
+  ExtensionAggregatorCreator,
+  FunctionArgumentsCache,
+} from './ExpressionEvaluator';
 import type { IDataDestination } from './IDataDestination';
 import type { IProxyHandler } from './IProxyHandler';
 import type { SourceType } from './IQueryEngine';
@@ -89,6 +94,8 @@ export interface IQueryContextCommon {
   extensionFunctionsAlwaysPushdown?: boolean;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)
   => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
+  extensionAggregators?: Record<string, ExtensionAggregator>;
+  extensionAggregatorCreator?: ExtensionAggregatorCreator;
   functionArgumentsCache?: FunctionArgumentsCache;
   serviceExecutors?: Record<string, IServiceExecutor>;
   serviceExecutorCreator?: ServiceExecutorCreator;

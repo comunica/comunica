@@ -1,5 +1,6 @@
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { makeNamedAggregate } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { materializeOperation, materializeTerm } from '../lib/MaterializeBindings';
@@ -625,6 +626,47 @@ describe('materializeOperation', () => {
       BF,
       { strictTargetVariables: true },
     )).toThrow(new Error('Tried to bind ?a in a SUM aggregate.'));
+  });
+
+  const extensionAggregate = makeNamedAggregate(
+    'http://example.org/median',
+    [ AF.createTermExpression(termVariableC) ],
+    false,
+    termVariableA,
+  );
+
+  it('should error on a group operation with ' +
+    'a binding variable equal to the bound extension aggregate variable for strictTargetVariables', () => {
+    expect(() => materializeOperation(
+      AF.createGroup(
+        AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableB, termVariableD ],
+        [ extensionAggregate ],
+      ),
+      bindingsA,
+      AF,
+      BF,
+      { strictTargetVariables: true },
+    )).toThrow(new Error('Tried to bind ?a in a http://example.org/median aggregate.'));
+  });
+
+  it('should not modify a group operation with ' +
+    'a binding variable equal to the bound extension aggregate variable', () => {
+    expect(materializeOperation(
+      AF.createGroup(
+        AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableB, termVariableD ],
+        [ extensionAggregate ],
+      ),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createGroup(
+        AF.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableB, termVariableD ],
+        [ extensionAggregate ],
+      ));
   });
 
   it('should modify a group operation with aa binding variable equal to the bound aggregate variable', () => {

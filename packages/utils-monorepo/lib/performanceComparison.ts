@@ -314,17 +314,134 @@ export function renderIngestionTables(ingestion: IIngestionComparison, options: 
 }
 
 /**
+ * The entries of both sides, as produced by `performance-requests`.
+ */
+export interface IRequestsComparison {
+  head: IGhbenchEntry[];
+  base: IGhbenchEntry[];
+}
+
+/**
+ * The minimal changes in the HTTP requests of a query that are listed, in requests and relative to the base.
+ * On the same commit, the requests of a query varied by up to 33 requests, which was 16% for a query with few requests.
+ */
+export const REQUESTS_MIN_DIFFERENCE = 50;
+export const REQUESTS_MIN_RELATIVE_DIFFERENCE = 0.05;
+
+/**
+ * Check if the HTTP requests of a query changed by more than they vary across runs of the same commit.
+ * @param head The requests of the pull request.
+ * @param base The requests of the base commit.
+ */
+export function isRequestsChange(head: number, base: number): boolean {
+  const difference = Math.abs(head - base);
+  return difference >= REQUESTS_MIN_DIFFERENCE && difference >= REQUESTS_MIN_RELATIVE_DIFFERENCE * base;
+}
+
+function getRequestsSides(entries: IGhbenchEntry[]): Map<string, IQuerySide> {
+  // The totals of the suites are left out, as they are determined again over the queries that both sides compare
+  return new Map(entries.filter(entry => entry.name.includes(' - ')).map((entry) => {
+    const match = /Failed: (\d+)\/(\d+)/u.exec(entry.extra ?? '');
+    return [ entry.name, {
+      value: entry.value ?? undefined,
+      unit: entry.unit,
+      failed: match ? Number(match[1]) : 0,
+      count: match ? Number(match[2]) : 1,
+    }];
+  }));
+}
+
+function formatRequests(value: number): string {
+  return `\`${formatCount(value)}\``;
+}
+
+/**
+ * Render the tables that compare the HTTP requests of both sides,
+ * with the totals per benchmark suite, and the queries whose requests changed.
+ * @param requests The request entries of both sides.
+ * @param options The commits and CI run that are compared.
+ */
+export function renderRequestsTables(requests: IRequestsComparison, options: IComparisonOptions): string {
+  const head = getRequestsSides(requests.head);
+  const base = getRequestsSides(requests.base);
+  const names = [ ...new Set([ ...head.keys(), ...base.keys() ]) ];
+  if (names.length === 0) {
+    return '';
+  }
+  const baseSuites = new Set([ ...base.keys() ].map(getSuite));
+  const headers = (title: string): string[] => [
+    formatRow([ title, `Current: ${options.headSha}`, `Base: ${options.baseSha}`, 'Ratio' ]),
+    '|-|-|-|-|',
+  ];
+
+  // Totals only include queries that succeeded on both sides
+  const totalRows: string[] = [];
+  const exclusions: string[] = [];
+  const changedRows: string[] = [];
+  let compared = 0;
+  for (const suite of new Set(names.map(getSuite))) {
+    const hasBase = baseSuites.has(suite);
+    const suiteNames = names.filter(name => getSuite(name) === suite);
+    const included = suiteNames.flatMap((name) => {
+      const headSide = head.get(name);
+      const baseSide = base.get(name);
+      return isOk(headSide) && (!hasBase || isOk(baseSide)) ?
+          [{ name, head: headSide.value, base: baseSide?.value ?? 0 }] :
+          [];
+    });
+    const headTotal = included.reduce((sum, entry) => sum + entry.head, 0);
+    const baseTotal = included.reduce((sum, entry) => sum + entry.base, 0);
+    if (!hasBase) {
+      totalRows.push(formatRow([ `\`${suite}\``, formatRequests(headTotal), '', '' ]));
+    } else if (included.length === 0) {
+      totalRows.push(formatRow([ `\`${suite}\``, '', '', 'n/a' ]));
+    } else {
+      totalRows.push(formatRow([
+        `\`${suite}\``,
+        formatRequests(headTotal),
+        formatRequests(baseTotal),
+        `\`${formatRatio(headTotal, baseTotal)}\``,
+      ]));
+      compared += included.length;
+      for (const entry of included.filter(entry => isRequestsChange(entry.head, entry.base))) {
+        changedRows.push(formatRow([
+          `\`${entry.name}\``,
+          formatRequests(entry.head),
+          formatRequests(entry.base),
+          `\`${formatRatio(entry.head, entry.base)}\``,
+        ]));
+      }
+    }
+    const excluded = suiteNames.filter(name => !included.some(entry => entry.name === name)).map(getQuery);
+    if (excluded.length > 0) {
+      exclusions.push(`\n\`${suite}\` totals exclude queries that failed or are missing on either side: ${excluded.join(', ')}`);
+    }
+  }
+
+  const threshold = `at least ${REQUESTS_MIN_RELATIVE_DIFFERENCE * 100}% and ${REQUESTS_MIN_DIFFERENCE} requests`;
+  let changes = '';
+  if (changedRows.length > 0) {
+    changes = `\n\n<details>\n<summary>Show the ${changedRows.length} of ${compared} queries whose HTTP requests changed by ${threshold}</summary>\n\n${[ ...headers('Query'), ...changedRows ].join('\n')}\n\n</details>`;
+  } else if (compared > 0) {
+    changes = `\n\nNone of the ${compared} queries changed its HTTP requests by ${threshold}.`;
+  }
+  return `\n\n# HTTP requests\n\n${[ ...headers('Benchmark suite'), ...totalRows, ...exclusions ].join('\n')}${changes}`;
+}
+
+/**
  * Render the comparison comment of a pull request.
  * @param headEntries The ghbench entries of the pull request.
  * @param baseEntries The ghbench entries of the base commit.
  * @param options The commits and CI run that are compared.
  * @param ingestion The ingestion entries of both sides, if measured.
+ * @param requests The request entries of both sides, if determined.
  */
 export function renderComparisonComment(
   headEntries: IGhbenchEntry[],
   baseEntries: IGhbenchEntry[],
   options: IComparisonOptions,
   ingestion?: IIngestionComparison,
+  requests?: IRequestsComparison,
 ): string {
   const rows = getRows(headEntries, baseEntries);
   const suites = [ ...new Set(rows.map(row => row.suite)) ];
@@ -408,6 +525,7 @@ export function renderComparisonComment(
     '\n\n<details>\n<summary>Show detailed results</summary>\n\n',
     [ ...header, ...detailRows ].join('\n'),
     '\n\n</details>',
+    requests ? renderRequestsTables(requests, options) : '',
     ingestion ? renderIngestionTables(ingestion, options) : '',
     `\n\nMeasured by [this CI run](${options.runUrl}).\n`,
   ].join('');
