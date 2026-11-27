@@ -5,6 +5,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { HttpServiceGraphStore } from '../lib/HttpServiceGraphStore';
+import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
@@ -60,16 +61,6 @@ function parseTriples(text: NodeJS.ReadableStream): RDF.Stream {
   return text.pipe(parser);
 }
 
-function parseUrl(url: string): any {
-  const parsed = new URL(url, graphStoreIri);
-  const query: Record<string, string | string[]> = {};
-  for (const key of new Set(parsed.searchParams.keys())) {
-    const values = parsed.searchParams.getAll(key);
-    query[key] = values.length > 1 ? values : values[0];
-  }
-  return { pathname: parsed.pathname, query };
-}
-
 describe('HttpServiceGraphStore', () => {
   let engine: any;
   let quads: RDF.Quad[];
@@ -113,7 +104,8 @@ describe('HttpServiceGraphStore', () => {
 
   describe('getTarget', () => {
     function getTarget(method: string, url: string, contentType?: string): any {
-      return HttpServiceGraphStore.getTarget(makeRequest(method, url, contentType), parseUrl(url), graphStoreIri);
+      const request = makeRequest(method, url, contentType);
+      return HttpServiceGraphStore.getTarget(request, HttpServiceSparqlEndpoint.parseRequestUrl(url), graphStoreIri);
     }
 
     it('should identify a graph directly through the request path', () => {
@@ -150,8 +142,8 @@ describe('HttpServiceGraphStore', () => {
     });
 
     it('should not apply to a request without a path', () => {
-      expect(HttpServiceGraphStore
-        .getTarget(makeRequest('GET', '/store'), <any> { query: {}}, graphStoreIri)).toBeUndefined();
+      const requestUrl = { pathname: '', search: '', query: {}};
+      expect(HttpServiceGraphStore.getTarget(makeRequest('GET', '/store'), requestUrl, graphStoreIri)).toBeUndefined();
     });
 
     it('should not apply to a path outside of the graph store', () => {
