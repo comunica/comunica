@@ -467,8 +467,9 @@ export function getSubOperations(operation: Operation): Operation[] {
  */
 export const inScopeVariables: typeof algebraUtils.inScopeVariables =
   (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] => {
-    // Traqula does not know the Comunica operation types, so the variables they bind are collected separately
     const comunicaTypesVariables: RDF.Variable[] = [];
+
+    // TS enforcement that all registered Comunica owned operators are registered here
     const comunicaTypesCallBacks: Required<Pick<Parameters<typeof visitOperation>[1], TypesComunica>> = {
       [TypesComunica.NODES]: { visitor(nodes) {
         algebraUtils.forEachTermVariable(nodes.graph, variable => comunicaTypesVariables.push(variable));
@@ -478,9 +479,12 @@ export const inScopeVariables: typeof algebraUtils.inScopeVariables =
         comunicaTypesVariables.push(...distinctTerms.variables);
       } },
     };
-    const variables = algebraUtils.inScopeVariables(op, (startObject, nodeCallBacks) =>
-      visitor(startObject, Object.assign(ignoreDefaultKeys(nodeCallBacks), comunicaTypesCallBacks)));
-    return comunicaTypesVariables.length === 0 ? variables : uniqTerms([ ...variables, ...comunicaTypesVariables ]);
+
+    const variables = algebraUtils
+      .inScopeVariables(op, (startObject, nodeCallBacks) =>
+        visitor(startObject, Object.assign(ignoreDefaultKeys(nodeCallBacks), comunicaTypesCallBacks)));
+
+    return uniqTerms([ ...variables, ...comunicaTypesVariables ]);
   };
 
 type VisitCallBacks = Parameters<typeof algebraUtils.visitOperation>[1];
