@@ -10,7 +10,7 @@ import { ArrayIterator } from 'asynciterator';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
-import { QuerySourceRdfJs } from '../lib';
+import { EncodedQuadAccessRdfStore, QuerySourceRdfJs } from '../lib';
 import '@comunica/utils-jest';
 import 'jest-rdf';
 
@@ -1234,6 +1234,21 @@ describe('QuerySourceRdfJs', () => {
             requestTime: 0,
           });
       });
+    });
+  });
+
+  describe('getEncodedAccess', () => {
+    it('should have an encoded access for ordered stores, once', () => {
+      source = new QuerySourceRdfJs(RdfStore.createOrdered(), DF, BF);
+      const access = source.getEncodedAccess();
+      expect(access).toBeInstanceOf(EncodedQuadAccessRdfStore);
+      expect(source.getEncodedAccess()).toBe(access);
+    });
+
+    it('should have no encoded access for other stores', () => {
+      expect(source.getEncodedAccess()).toBeUndefined();
+      expect(source.getEncodedAccess()).toBeUndefined();
+      expect(new QuerySourceRdfJs(new Store(), DF, BF).getEncodedAccess()).toBeUndefined();
     });
   });
 

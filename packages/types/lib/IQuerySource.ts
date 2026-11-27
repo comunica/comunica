@@ -3,6 +3,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Bindings, BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
+import type { IEncodedQuadAccess } from './IEncodedQuadAccess';
 import type { ILink } from './ILink';
 import type { MetadataBindings } from './IMetadata';
 
@@ -129,6 +130,13 @@ export interface IQuerySource {
    * @return False if the source certainly returns no blank nodes, true otherwise.
    */
   canContainBlankNodes?: () => boolean;
+
+  /**
+   * Obtain direct access to the quads of this source as integer-encoded terms, if this source supports it.
+   * @param context The action context.
+   * @return The access, or undefined if this source does not support it.
+   */
+  getEncodedAccess?: (context: IActionContext) => IEncodedQuadAccess | undefined;
 
   /**
    * Returns a (possibly lazy) stream that returns all quads matching the operation.

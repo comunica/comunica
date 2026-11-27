@@ -39,6 +39,21 @@ export class Bindings implements RDF.Bindings {
     return new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
+  /**
+   * Create new bindings with additional entries, copying the existing entries only once,
+   * unlike repeated calls to {@link Bindings#set}.
+   * @param keys The variable names.
+   * @param values The values, in the same order as the keys.
+   * @param count The number of entries to add, which defaults to all keys.
+   */
+  public extend(keys: readonly string[], values: readonly RDF.Term[], count: number = keys.length): Bindings {
+    const entries = new Map(this.entries);
+    for (let i = 0; i < count; i++) {
+      entries.set(keys[i], values[i]);
+    }
+    return new Bindings(this.dataFactory, entries, this.contextHolder);
+  }
+
   public delete(key: RDF.Variable | string): Bindings {
     const name = typeof key === 'string' ? key : key.value;
     if (!this.entries.has(name)) {

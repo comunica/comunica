@@ -1,6 +1,7 @@
 import type { IIndexNestedLoopLookup } from '@comunica/actor-rdf-join-inner-multi-index-nested-loop';
 import {
   ActorRdfJoinMultiIndexNestedLoop,
+  EncodedIndexNestedLoopIterator,
   IndexNestedLoopIterator,
 } from '@comunica/actor-rdf-join-inner-multi-index-nested-loop';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
@@ -25,6 +26,7 @@ import { getOperationSource } from '@comunica/utils-query-operation';
  */
 export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
   public readonly selectivityModifier: number;
+  public readonly encodedLookups: boolean;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinOptionalIndexNestedLoopArgs) {
@@ -36,10 +38,14 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
       requiresVariableOverlap: true,
     });
     this.selectivityModifier = args.selectivityModifier;
+    this.encodedLookups = args.encodedLookups;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
-  protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
+  protected async getOutput(
+    action: IActionRdfJoin,
+    sideData: IActorRdfJoinTestSideData,
+  ): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     action.entries[1].output.bindingsStream.destroy();
     const operation = action.entries[1].operation;
@@ -50,19 +56,35 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
       context: sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
       optional: true,
     }];
+    // Lookups over an in-memory source are done on integer-encoded terms if possible.
+    const encodedPlan = this.encodedLookups ?
+      EncodedIndexNestedLoopIterator.compile(
+        lookups,
+        sideData.metadatas[0].variables,
+        action.context,
+        { unionsAndPaths: false, adaptive: false },
+      ) :
+      undefined;
     // Quad patterns are bound without bindings factory, so it is only created for other operations.
-    const bindingsFactory = IndexNestedLoopIterator.needsBindingsFactory(lookups) ?
+    const bindingsFactory = encodedPlan !== undefined || IndexNestedLoopIterator.needsBindingsFactory(lookups) ?
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory) :
       undefined;
     return {
       result: {
         type: 'bindings',
-        bindingsStream: new IndexNestedLoopIterator(
-          action.entries[0].output.bindingsStream,
-          lookups,
-          new AlgebraFactory(dataFactory),
-          bindingsFactory,
-        ),
+        bindingsStream: encodedPlan ?
+          new EncodedIndexNestedLoopIterator(
+            action.entries[0].output.bindingsStream,
+            encodedPlan,
+            bindingsFactory!,
+            dataFactory,
+          ) :
+          new IndexNestedLoopIterator(
+            action.entries[0].output.bindingsStream,
+            lookups,
+            new AlgebraFactory(dataFactory),
+            bindingsFactory,
+          ),
         metadata: async() => {
           const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
           return await this.constructResultMetadata(
@@ -111,6 +133,11 @@ export interface IActorRdfJoinOptionalIndexNestedLoopArgs extends IActorRdfJoinA
    * @default {0.0000005}
    */
   selectivityModifier: number;
+  /**
+   * If lookups over a source that offers integer-encoded access to its quads are done over encoded terms.
+   * @default {true}
+   */
+  encodedLookups: boolean;
   /**
    * A mediator for creating binding context merge handlers
    */

@@ -45,3 +45,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
 * `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).
 * `selectivityModifier`: Multiplier for selectivity values, which defaults to half the one of the optional bind join, so that this actor is preferred where both apply. _(defaults to `0.0000005`)_
+* `encodedLookups`: If lookups over a source that offers integer-encoded access to its quads are done over encoded terms. _(defaults to `true`)_

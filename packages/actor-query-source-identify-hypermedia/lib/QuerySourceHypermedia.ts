@@ -8,6 +8,7 @@ import type {
   ComunicaDataFactory,
   FragmentSelectorShape,
   IActionContext,
+  IEncodedQuadAccess,
   IQueryBindingsOptions,
   IQuerySource,
   ILink,
@@ -124,6 +125,10 @@ export class QuerySourceHypermedia implements IQuerySource {
 
   public canContainBlankNodes(): boolean {
     return this.directSourceState?.source.canContainBlankNodes?.() !== false;
+  }
+
+  public getEncodedAccess(context: IActionContext): IEncodedQuadAccess | undefined {
+    return this.directSourceState?.source.getEncodedAccess?.(this.getDirectContext(context));
   }
 
   public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {

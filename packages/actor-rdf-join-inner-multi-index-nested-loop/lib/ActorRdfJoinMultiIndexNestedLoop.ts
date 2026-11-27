@@ -20,6 +20,8 @@ import type {
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { doesShapeAcceptOperation, getOperationSource, getSourceSelectorShape } from '@comunica/utils-query-operation';
+import type { IEncodedIndexNestedLoopOptions, IEncodedIndexNestedLoopPlan } from './EncodedIndexNestedLoopIterator';
+import { EncodedIndexNestedLoopIterator } from './EncodedIndexNestedLoopIterator';
 import type { IIndexNestedLoopLookup } from './IndexNestedLoopIterator';
 import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
 
@@ -32,6 +34,8 @@ import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
  */
 export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoinMultiIndexNestedLoopTestSideData> {
   public readonly lookupCost: number;
+  public readonly encodedLookups: boolean;
+  public readonly encodedOptions: IEncodedIndexNestedLoopOptions;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinMultiIndexNestedLoopArgs) {
@@ -40,6 +44,8 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       physicalName: 'index-nested-loop',
     });
     this.lookupCost = args.lookupCost;
+    this.encodedLookups = args.encodedLookups;
+    this.encodedOptions = { unionsAndPaths: args.encodedLookups && args.encodedUnionAndPathLookups, adaptive: true };
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
@@ -58,30 +64,46 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       }
     }
 
-    const lookups = order.map((index): IIndexNestedLoopLookup => {
-      const operation = action.entries[index].operation;
-      const sourceWrapper = <IQuerySourceWrapper> getOperationSource(operation);
-      return {
-        operation,
-        source: sourceWrapper.source,
-        context: sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
-      };
-    });
+    const lookups = ActorRdfJoinMultiIndexNestedLoop.getLookups(action, order);
+
+    // Lookups over the same in-memory source are done on integer-encoded terms if possible,
+    // in which case a first entry over that source is scanned as well.
+    let encodedPlan: IEncodedIndexNestedLoopPlan | undefined;
+    if (this.encodedLookups) {
+      const firstEntry = action.entries[first];
+      const firstSource = getOperationSource(firstEntry.operation);
+      if (!firstEntry.operationModified && firstSource) {
+        encodedPlan = EncodedIndexNestedLoopIterator.compile(lookups, [], action.context, this.encodedOptions, {
+          operation: firstEntry.operation,
+          source: firstSource.source,
+          context: firstSource.context ? action.context.merge(firstSource.context) : action.context,
+        });
+      }
+      encodedPlan ??= EncodedIndexNestedLoopIterator
+        .compile(lookups, sideData.metadatas[first].variables, action.context, this.encodedOptions);
+    }
 
     // Only create BF when absolutely required.
-    const bindingsFactory = IndexNestedLoopIterator.needsBindingsFactory(lookups) ?
+    const bindingsFactory = encodedPlan !== undefined || IndexNestedLoopIterator.needsBindingsFactory(lookups) ?
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory) :
       undefined;
 
     return {
       result: {
         type: 'bindings',
-        bindingsStream: new IndexNestedLoopIterator(
-          action.entries[first].output.bindingsStream,
-          lookups,
-          algebraFactory,
-          bindingsFactory,
-        ),
+        bindingsStream: encodedPlan ?
+          new EncodedIndexNestedLoopIterator(
+            action.entries[first].output.bindingsStream,
+            encodedPlan,
+            bindingsFactory!,
+            dataFactory,
+          ) :
+          new IndexNestedLoopIterator(
+            action.entries[first].output.bindingsStream,
+            lookups,
+            algebraFactory,
+            bindingsFactory,
+          ),
         metadata: async() => {
           const metadata = await this.constructResultMetadata(action.entries, sideData.metadatas, action.context, {
             termOrder: sideData.metadatas[first].termOrder,
@@ -95,8 +117,48 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       physicalPlanMetadata: {
         bindIndex: first,
         lookupOrder: order,
+        encoded: Boolean(encodedPlan),
       },
     };
+  }
+
+  /**
+   * Create the lookups of the given entries.
+   * @param action The join action.
+   * @param order The indexes of the entries to look up, in order.
+   */
+  public static getLookups(action: IActionRdfJoin, order: number[]): IIndexNestedLoopLookup[] {
+    return order.map((index): IIndexNestedLoopLookup => {
+      const operation = action.entries[index].operation;
+      // Unions and paths have no source themselves, but their patterns and predicates do.
+      const sourceWrapper = <IQuerySourceWrapper> (getOperationSource(operation) ??
+        EncodedIndexNestedLoopIterator.getEncodedOnlySource(operation));
+      return {
+        operation,
+        source: sourceWrapper.source,
+        context: sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
+      };
+    });
+  }
+
+  /**
+   * Check if the given entry can only be looked up over integer-encoded terms,
+   * as it is a union of patterns or a path over a source that supports such lookups.
+   * @param entry A join entry.
+   * @param context The action context.
+   */
+  public async canLookUpEncodedOnly(entry: IJoinEntry, context: IActionContext): Promise<boolean> {
+    if (!this.encodedOptions.unionsAndPaths || entry.operationModified) {
+      return false;
+    }
+    const sourceWrapper = EncodedIndexNestedLoopIterator.getEncodedOnlySource(entry.operation);
+    if (!sourceWrapper) {
+      return false;
+    }
+    // Determining the shape makes sources that wrap others find the source they wrap.
+    await getSourceSelectorShape(sourceWrapper, context);
+    const sourceContext = sourceWrapper.context ? context.merge(sourceWrapper.context) : context;
+    return Boolean(sourceWrapper.source.getEncodedAccess?.(sourceContext));
   }
 
   /**
@@ -176,11 +238,15 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     const entries = action.entries.map((entry, i) => ({ ...entry, metadata: metadatas[i] }));
 
     // Any entry that can be looked up synchronously can be looked up, and any other one can be first.
+    // Unions and paths can only be looked up over integer-encoded terms.
     const lookupable = await Promise.all(entries
       .map(entry => ActorRdfJoinMultiIndexNestedLoop.canLookUp(entry, action.context)));
+    const encodedOnly = await Promise.all(entries.map((entry, i) => lookupable[i] ?
+      false :
+      this.canLookUpEncodedOnly(entry, action.context)));
     const firstCandidates = entries.map((entry, i) => i)
       .filter(i => !ActorRdfJoin.isOperationRequired(entries[i], metadatas[i]) &&
-        lookupable.every((canLookup, j) => canLookup || j === i));
+        lookupable.every((canLookup, j) => canLookup || encodedOnly[j] || j === i));
     if (firstCandidates.length === 0) {
       return failTest(`Actor ${this.name} requires all entries but one to be operations over sources that support synchronous lookups`);
     }
@@ -189,20 +255,32 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     let best: { first: number; order: number[]; iterations: number; cardinality: number } | undefined;
     for (const first of firstCandidates) {
       const lookupOrder = ActorRdfJoinMultiIndexNestedLoop.getLookupOrder(entries, first, this.lookupCost);
+      // Orders with unions or paths are only possible if all their lookups can be done over encoded terms.
+      if (lookupOrder.order.some(index => encodedOnly[index]) && !EncodedIndexNestedLoopIterator.compile(
+        ActorRdfJoinMultiIndexNestedLoop.getLookups(action, lookupOrder.order),
+        metadatas[first].variables,
+        action.context,
+        this.encodedOptions,
+      )) {
+        continue;
+      }
       if (!best || lookupOrder.iterations < best.iterations) {
         best = { first, ...lookupOrder };
       }
     }
+    if (!best) {
+      return failTest(`Actor ${this.name} can not look up unions or paths in any order over encoded terms`);
+    }
 
     // Only the first entry is requested, as lookups are synchronous.
-    const requestTime = ActorRdfJoin.getRequestInitialTimes(metadatas)[best!.first] +
-      metadatas[best!.first].cardinality.value * ActorRdfJoin.getRequestItemTimes(metadatas)[best!.first];
+    const requestTime = ActorRdfJoin.getRequestInitialTimes(metadatas)[best.first] +
+      metadatas[best.first].cardinality.value * ActorRdfJoin.getRequestItemTimes(metadatas)[best.first];
     return passTestWithSideData({
-      iterations: best!.iterations,
+      iterations: best.iterations,
       persistedItems: 0,
       blockingItems: 0,
       requestTime,
-    }, { ...sideData, first: best!.first, order: best!.order, cardinality: best!.cardinality });
+    }, { ...sideData, first: best.first, order: best.order, cardinality: best.cardinality });
   }
 }
 
@@ -214,6 +292,17 @@ export interface IActorRdfJoinMultiIndexNestedLoopArgs
    * @default {1}
    */
   lookupCost: number;
+  /**
+   * If lookups over a source that offers integer-encoded access to its quads are done over encoded terms.
+   * @default {true}
+   */
+  encodedLookups: boolean;
+  /**
+   * If unions of patterns and zero-or-more or one-or-more paths along a single predicate can be looked up
+   * over encoded terms, which lets this actor join them without binding them to every partial result.
+   * @default {true}
+   */
+  encodedUnionAndPathLookups: boolean;
   /**
    * A mediator for creating binding context merge handlers
    */
