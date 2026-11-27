@@ -6,9 +6,13 @@ import {
   getFailures,
   getRows,
   INGESTION_METRICS,
+  isRequestsChange,
   renderComparisonComment,
   renderIngestionRows,
+  renderRequestsTables,
 } from '../lib/performanceComparison';
+import type { IQueryInstantiation } from '../lib/performanceRequests';
+import { toRequestsEntries } from '../lib/performanceRequests';
 
 const [ TIME, MEMORY, STORE ] = INGESTION_METRICS;
 
@@ -35,6 +39,11 @@ function ingestion(
     { name: `${suite} - memory after ingestion`, unit: 'MiB', value: memory, extra },
     { name: `${suite} - store size after ingestion`, unit: 'MiB', value: store, extra },
   ];
+}
+
+function requests(suite: string, queries: Record<string, (number | undefined)[]>): IGhbenchEntry[] {
+  return toRequestsEntries(suite, Object.entries(queries).flatMap(([ name, counts ]) =>
+    counts.map((count): IQueryInstantiation => ({ name, failed: count === undefined, httpRequests: count }))));
 }
 
 describe('formatRatio', () => {
@@ -393,5 +402,135 @@ Measured by [this CI run](https://ci/1).
   it('omits ingestion results if none were measured', () => {
     expect(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS, { head: [], base: []}))
       .toBe(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS));
+  });
+
+  it('renders HTTP requests after the detailed results', () => {
+    const comment = renderComparisonComment(
+      [ time('A - q1', 100) ],
+      [ time('A - q1', 50) ],
+      OPTIONS,
+      { head: ingestion('A', 1000, 800, 400), base: ingestion('A', 1250, 1000, 500) },
+      { head: requests('A', { q1: [ 1000 ]}), base: requests('A', { q1: [ 500 ]}) },
+    );
+    expect(comment).toContain(`</details>
+
+# HTTP requests
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`1,000\` | \`500\` | \`2.00\` |
+`);
+    expect(comment.indexOf('# HTTP requests')).toBeLessThan(comment.indexOf('# Ingestion time'));
+  });
+
+  it('omits HTTP requests if none were determined', () => {
+    expect(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS, undefined, {
+      head: [],
+      base: [],
+    })).toBe(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS));
+  });
+});
+
+describe('isRequestsChange', () => {
+  it('requires both an absolute and a relative difference', () => {
+    expect(isRequestsChange(1050, 1000)).toBe(true);
+    expect(isRequestsChange(950, 1000)).toBe(true);
+    expect(isRequestsChange(1049, 1000)).toBe(false);
+    expect(isRequestsChange(10_400, 10_000)).toBe(false);
+    expect(isRequestsChange(100_000, 10_000)).toBe(true);
+    expect(isRequestsChange(49, 0)).toBe(false);
+    expect(isRequestsChange(50, 0)).toBe(true);
+  });
+});
+
+describe('renderRequestsTables', () => {
+  it('renders nothing without entries', () => {
+    expect(renderRequestsTables({ head: [], base: []}, OPTIONS)).toBe('');
+  });
+
+  it('renders totals and the queries that changed', () => {
+    expect(renderRequestsTables({
+      head: [
+        ...requests('A', { q1: [ 1000, 1000 ], q2: [ 120 ], q3: [ 2000 ], q4: [ 5 ]}),
+        ...requests('B', { q1: [ 10 ]}),
+      ],
+      base: [
+        ...requests('A', { q1: [ 900, 900 ], q2: [ 60 ], q3: [ 2010 ], q4: [ 0 ]}),
+        ...requests('B', { q1: [ 10 ]}),
+      ],
+    }, OPTIONS)).toBe(`
+
+# HTTP requests
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`4,125\` | \`3,870\` | \`1.07\` |
+| \`B\` | \`10\` | \`10\` | \`1.00\` |
+
+<details>
+<summary>Show the 2 of 5 queries whose HTTP requests changed by at least 5% and 50 requests</summary>
+
+| Query | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A - q1\` | \`2,000\` | \`1,800\` | \`1.11\` |
+| \`A - q2\` | \`120\` | \`60\` | \`2.00\` |
+
+</details>`);
+  });
+
+  it('compares entries without failure details as succeeded', () => {
+    expect(renderRequestsTables({
+      head: [{ name: 'A - q1', unit: 'requests', value: 200 }],
+      base: [{ name: 'A - q1', unit: 'requests', value: 100 }],
+    }, OPTIONS)).toContain(`| \`A - q1\` | \`200\` | \`100\` | \`2.00\` |`);
+  });
+
+  it('renders that no query changed', () => {
+    expect(renderRequestsTables({
+      head: requests('A', { q1: [ 1000 ]}),
+      base: requests('A', { q1: [ 1010 ]}),
+    }, OPTIONS)).toBe(`
+
+# HTTP requests
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`1,000\` | \`1,010\` | \`0.99\` |
+
+None of the 1 queries changed its HTTP requests by at least 5% and 50 requests.`);
+  });
+
+  it('excludes failed and missing queries from the totals and changes', () => {
+    expect(renderRequestsTables({
+      head: [
+        ...requests('A', { ok: [ 100 ], partial: [ 500, undefined ], broken: [ undefined ], new: [ 300 ]}),
+        ...requests('B', { q1: [ undefined, 10 ]}),
+        ...requests('C', { q1: [ 50 ], q2: [ undefined, 50 ]}),
+      ],
+      base: [
+        ...requests('A', { ok: [ 100 ], partial: [ 100, 100 ], broken: [ 1000 ], old: [ 300 ]}),
+        ...requests('B', { q1: [ 10, 10 ]}),
+        ...requests('D', { q1: [ 50 ]}),
+      ],
+    }, OPTIONS)).toBe(`
+
+# HTTP requests
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`100\` | \`100\` | \`1.00\` |
+| \`B\` |  |  | n/a |
+| \`C\` | \`50\` |  |  |
+| \`D\` |  |  | n/a |
+
+\`A\` totals exclude queries that failed or are missing on either side: partial, broken, new, old
+
+\`B\` totals exclude queries that failed or are missing on either side: q1
+
+\`C\` totals exclude queries that failed or are missing on either side: q2
+
+\`D\` totals exclude queries that failed or are missing on either side: q1
+
+None of the 1 queries changed its HTTP requests by at least 5% and 50 requests.`);
   });
 });
