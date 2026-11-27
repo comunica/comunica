@@ -7,6 +7,7 @@ import {
   isOtpError,
   isRateLimitError,
   listStaged,
+  npmEnv,
   npmErrorMessage,
   parseConcurrency,
   promptTerminal,
@@ -95,14 +96,46 @@ describe('npmCli', () => {
       expect(spawn).toHaveBeenCalledWith(
         'npm',
         [ 'stage', 'publish' ],
-        { cwd: '/repo/packages/a', stdio: [ 'ignore', 'pipe', 'pipe' ]},
+        { cwd: '/repo/packages/a', env: expect.any(Object), stdio: [ 'ignore', 'pipe', 'pipe' ]},
       );
+    });
+
+    it('should not pass the registry that yarn injects', async() => {
+      process.env.npm_config_registry = 'https://registry.yarnpkg.com';
+      try {
+        const result = runNpm([ 'stage', 'list' ]);
+        child.emit('close', 0);
+        await result;
+        expect(jest.mocked(spawn).mock.calls[0][2].env!.npm_config_registry).toBeUndefined();
+      } finally {
+        delete process.env.npm_config_registry;
+      }
     });
 
     it('should reject when npm cannot be started', async() => {
       const result = runNpm([ '--version' ]);
       child.emit('error', new Error('spawn npm ENOENT'));
       await expect(result).rejects.toThrow('spawn npm ENOENT');
+    });
+  });
+
+  describe('npmEnv', () => {
+    it('should remove the yarn registry in any case and with or without a trailing slash', () => {
+      expect(npmEnv({ npm_config_registry: 'https://registry.yarnpkg.com', PATH: '/bin' })).toEqual({ PATH: '/bin' });
+      expect(npmEnv({ NPM_CONFIG_REGISTRY: 'https://registry.yarnpkg.com/' })).toEqual({});
+    });
+
+    it('should keep other registries', () => {
+      expect(npmEnv({ npm_config_registry: 'https://registry.npmjs.org/' }))
+        .toEqual({ npm_config_registry: 'https://registry.npmjs.org/' });
+      expect(npmEnv({ npm_config_registry: 'http://localhost:4873/' }))
+        .toEqual({ npm_config_registry: 'http://localhost:4873/' });
+    });
+
+    it('should not modify the given environment', () => {
+      const env = { npm_config_registry: 'https://registry.yarnpkg.com' };
+      npmEnv(env);
+      expect(env).toEqual({ npm_config_registry: 'https://registry.yarnpkg.com' });
     });
   });
 
@@ -205,6 +238,14 @@ describe('npmCli', () => {
     it('should not wait without rate limits', async() => {
       await backoff.waitIfPaused();
       expect(wait).not.toHaveBeenCalled();
+    });
+
+    it('should use real time by default', async() => {
+      const realBackoff = new RateLimitBackoff(5, 5);
+      const start = Date.now();
+      expect(realBackoff.hit()).toBe(5);
+      await realBackoff.waitIfPaused();
+      expect(Date.now() - start).toBeGreaterThanOrEqual(4);
     });
 
     it('should pause once for parallel rate limits', async() => {

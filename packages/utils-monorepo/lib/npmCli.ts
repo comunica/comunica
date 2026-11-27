@@ -44,6 +44,22 @@ export interface IPublicPackage {
 }
 
 /**
+ * Get the environment for npm commands.
+ * Yarn 1 passes its own registry to scripts as npm_config_registry, which would send npm to yarn's mirror.
+ * That mirror rejects authenticated requests, so this removes it and lets npm use its own registry config.
+ * @param env The current environment.
+ */
+export function npmEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const result = { ...env };
+  for (const key of Object.keys(result)) {
+    if (key.toLowerCase() === 'npm_config_registry' && /^https?:\/\/registry\.yarnpkg\.com\/?$/u.test(result[key]!)) {
+      delete result[key];
+    }
+  }
+  return result;
+}
+
+/**
  * Run an npm command and capture its output.
  * Stdin is ignored, so npm fails with EOTP instead of prompting by itself.
  * @param args The npm arguments.
@@ -51,7 +67,7 @@ export interface IPublicPackage {
  */
 export function runNpm(args: string[], cwd?: string): Promise<INpmResult> {
   return new Promise((resolve, reject) => {
-    const child = spawn('npm', args, { cwd, stdio: [ 'ignore', 'pipe', 'pipe' ]});
+    const child = spawn('npm', args, { cwd, env: npmEnv(process.env), stdio: [ 'ignore', 'pipe', 'pipe' ]});
     let stdout = '';
     let stderr = '';
     child.stdout.on('data', (data) => {
