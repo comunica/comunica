@@ -459,7 +459,8 @@ export function getSubOperations(operation: Operation): Operation[] {
 }
 
 /**
- * Detects all in-scope variables, including those bound by the operation types Comunica adds to the algebra.
+ * Detects all in-scope variables.
+ * Those bound by the operation types Comunica adds to the algebra come last.
  * @param op Input algebra tree.
  * @param visitor The visitor traversing the operations, allowing different default pre-visitor contexts.
  * @return List of unique in-scope variables.
