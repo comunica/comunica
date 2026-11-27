@@ -123,8 +123,8 @@ describe('stageRelease', () => {
       const npm = fakeNpm([ staged('@comunica/a', '0.1.0'), staged('other') ]);
       await expect(stageRelease(options(npm))).resolves.toBe(true);
       expect(log).toHaveBeenCalledWith('Found 2 packages at version 1.0.0.');
-      expect(npm).toHaveBeenCalledWith([ 'stage', 'publish' ], '/repo/packages/a');
-      expect(npm).toHaveBeenCalledWith([ 'stage', 'publish' ], '/repo/packages/b');
+      expect(npm).toHaveBeenCalledWith([ 'stage', 'publish', '--workspaces=false' ], '/repo/packages/a');
+      expect(npm).toHaveBeenCalledWith([ 'stage', 'publish', '--workspaces=false' ], '/repo/packages/b');
       expect(npm).toHaveBeenCalledTimes(4);
       expect(log).toHaveBeenCalledWith('[1/2] Staged @comunica/a@1.0.0');
       expect(log).toHaveBeenCalledWith('[2/2] Staged @comunica/b@1.0.0');
@@ -136,7 +136,7 @@ describe('stageRelease', () => {
       const npm = fakeNpm([ staged('@comunica/a') ]);
       await expect(stageRelease(options(npm))).resolves.toBe(true);
       expect(log).toHaveBeenCalledWith('Found 2 packages at version 1.0.0, of which 1 are already staged.');
-      expect(npm).not.toHaveBeenCalledWith([ 'stage', 'publish' ], '/repo/packages/a');
+      expect(npm).not.toHaveBeenCalledWith([ 'stage', 'publish', '--workspaces=false' ], '/repo/packages/a');
       expect(log).toHaveBeenLastCalledWith('Staged 1 of 1 packages.');
     });
 
@@ -144,7 +144,8 @@ describe('stageRelease', () => {
       const npm = fakeNpm([]);
       await expect(stageRelease(options(npm, { tag: 'next', yes: false }))).resolves.toBe(true);
       expect(prompt).toHaveBeenCalledWith('Stage 2 with tag next? [y/N] ');
-      expect(npm).toHaveBeenCalledWith([ 'stage', 'publish', '--tag', 'next' ], '/repo/packages/a');
+      expect(npm)
+        .toHaveBeenCalledWith([ 'stage', 'publish', '--workspaces=false', '--tag', 'next' ], '/repo/packages/a');
       expect(log).toHaveBeenLastCalledWith('Staged 2 of 2 packages.');
     });
 
@@ -227,9 +228,8 @@ describe('stageRelease', () => {
     it('should stage the version from lerna.json', async() => {
       await expect(stageReleaseCli([ '--yes', '--tag', 'next', '--concurrency', '2' ], '/repo')).resolves.toBe(true);
       expect(readJson).toHaveBeenCalledWith('/repo/lerna.json');
-      expect(spawn).toHaveBeenCalledWith('npm', [ 'stage', 'publish', '--tag', 'next' ], expect.objectContaining({
-        cwd: '/repo/packages/b',
-      }));
+      const args = [ 'stage', 'publish', '--workspaces=false', '--tag', 'next' ];
+      expect(spawn).toHaveBeenCalledWith('npm', args, expect.objectContaining({ cwd: '/repo/packages/b' }));
       expect(consoleLog).toHaveBeenLastCalledWith('Staged 2 of 2 packages.');
     });
 

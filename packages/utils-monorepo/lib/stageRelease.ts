@@ -1,4 +1,7 @@
 // eslint-disable-next-line import/no-nodejs-modules
+import { availableParallelism } from 'node:os';
+
+// eslint-disable-next-line import/no-nodejs-modules
 import { join } from 'node:path';
 
 // eslint-disable-next-line import/no-nodejs-modules
@@ -82,7 +85,8 @@ export async function stageRelease(options: IStageReleaseOptions): Promise<boole
     return true;
   }
 
-  const args = [ 'stage', 'publish', ...options.tag ? [ '--tag', options.tag ] : [] ];
+  // Without --workspaces=false, npm loads every workspace of the monorepo on each run, which doubles its startup time.
+  const args = [ 'stage', 'publish', '--workspaces=false', ...options.tag ? [ '--tag', options.tag ] : [] ];
   const failures: string[] = [];
   const skipped: string[] = [];
   let staged = 0;
@@ -133,7 +137,8 @@ export async function stageReleaseCli(argv: string[], cwd: string): Promise<bool
     options: {
       version: { type: 'string' },
       tag: { type: 'string' },
-      concurrency: { type: 'string', default: '4' },
+      // Like lerna, use all CPUs by default: npm's startup is CPU-bound, and the backoff handles rate limits.
+      concurrency: { type: 'string', default: String(availableParallelism()) },
       yes: { type: 'boolean', short: 'y', default: false },
     },
   });
