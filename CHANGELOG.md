@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.5.1"></a>
+## [v5.5.1](https://github.com/comunica/comunica/compare/v5.5.0...v5.5.1) - 2026-11-27
+
+### Changed
+* [Replace deprecated url.parse in SPARQL endpoint (#2050)](https://github.com/comunica/comunica/commit/7327c03d113733a69887b9b3c094bc5bb4b4fd9d)
+
+### Fixed
+* [Fix missing support for extension aggregates in the standalone expression engine (#2043)](https://github.com/comunica/comunica/commit/02d4ceba8cd9482ca7ae3906c65efeaca39ea4a5)
+
 <a name="v5.5.0"></a>
 ## [v5.5.0](https://github.com/comunica/comunica/compare/v5.4.1...v5.5.0) - 2026-11-24
 
