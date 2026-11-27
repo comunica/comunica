@@ -48,6 +48,7 @@
     "@comunica/types": "^5.5.0",
     "@comunica/utils-algebra": "^5.5.0",
     "@comunica/utils-expression-evaluator": "^5.5.0",
+    "@rdfjs/types": "*",
     "asyncjoin": "^2.0.1"
   }
 }
