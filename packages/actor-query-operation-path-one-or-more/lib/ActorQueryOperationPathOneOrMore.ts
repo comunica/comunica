@@ -11,6 +11,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { estimateCardinality } from '@comunica/utils-metadata';
 import { getSafeBindings, groupRepeatedSubOperations } from '@comunica/utils-query-operation';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 
@@ -60,7 +61,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       return {
         type: 'bindings',
         bindingsStream: starEval.bindingsStream,
-        metadata: async() => ({ ...await starEval.metadata(), variables }),
+        metadata: async() => estimateCardinality({ ...await starEval.metadata(), variables }),
       };
     }
     if (operation.subject.termType === 'Variable' && operation.subject.equals(operation.object)) {
@@ -77,10 +78,10 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         bindingsStream,
         metadata: async() => {
           const metadata = await results.metadata();
-          return {
+          return estimateCardinality({
             ...metadata,
             variables: metadata.variables.filter(({ variable }) => !variable.equals(objectVar)),
-          };
+          });
         },
       };
     }
@@ -145,7 +146,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       return {
         type: 'bindings',
         bindingsStream,
-        metadata: async() => ({ ...await results.metadata(), variables }),
+        metadata: async() => estimateCardinality({ ...await results.metadata(), variables }),
       };
     }
     if (operation.subject.termType === 'Variable' && operation.object.termType !== 'Variable') {
@@ -176,7 +177,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: async() => ({
+      metadata: async() => estimateCardinality({
         ...await results.metadata(),
         variables: (operation.graph.termType === 'Variable' ? [ operation.graph ] : [])
           .map(variable => ({ variable, canBeUndef: false })),

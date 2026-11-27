@@ -48,6 +48,7 @@
     "@comunica/utils-bindings-factory": "^5.5.1",
     "@comunica/utils-bindings-index": "^5.5.1",
     "@comunica/utils-iterator": "^5.5.1",
+    "@comunica/utils-metadata": "^5.4.0",
     "@rdfjs/types": "*",
     "rdf-string": "^2.0.1"
   }
