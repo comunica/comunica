@@ -5,7 +5,7 @@ import type { IQueryOperationResultVoid } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import arrayifyStream from 'arrayify-stream';
-import { ArrayIterator } from 'asynciterator';
+import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationUpdateDeleteInsert } from '../lib/ActorQueryOperationUpdateDeleteInsert';
 import 'jest-rdf';
@@ -318,6 +318,39 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       await expect(output.execute()).resolves.toBeUndefined();
       await expect(arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).resolves.toEqual([]);
       await expect(arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete)).resolves.toEqual([]);
+    });
+
+    it('should evaluate the where clause completely before producing quads', async() => {
+      const where = new ArrayIterator([
+        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+      ], { autoStart: false });
+      mediatorQueryOperation.mediate = () => Promise.resolve({ type: 'bindings', bindingsStream: where });
+      const op = {
+        operation: AF.createDeleteInsert(
+          [ AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('a')) ],
+          [ AF.createPattern(DF.namedNode('s'), DF.namedNode('q'), DF.variable('a')) ],
+          AF.createBgp([]), // Dummy operation
+        ),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
+      await actor.run(op, undefined);
+      const { quadStreamDelete, quadStreamInsert } = mediatorUpdateQuads.mediate.mock.calls[0][0];
+      // Nothing is evaluated before quads are read
+      expect(where.done).toBe(false);
+      const first = await new Promise(resolve => quadStreamDelete.once('data', resolve));
+      expect(first).toEqualRdfQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.literal('1')));
+      expect(where.done).toBe(true);
+      await expect(arrayifyStream(quadStreamInsert)).resolves.toBeRdfIsomorphic([
+        DF.quad(DF.namedNode('s'), DF.namedNode('q'), DF.literal('1')),
+        DF.quad(DF.namedNode('s'), DF.namedNode('q'), DF.literal('2')),
+      ]);
+    });
+
+    it('should pass on errors of the where clause', async() => {
+      const where = new TransformIterator(() => Promise.reject(new Error('where failed')), { autoStart: false });
+      await expect(arrayifyStream(ActorQueryOperationUpdateDeleteInsert.evaluatedFirst(<any> where)))
+        .rejects.toThrow('where failed');
     });
   });
 });

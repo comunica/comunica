@@ -3890,6 +3890,23 @@ CONSTRUCT {
           .toBe(1);
       });
 
+      it('with insert where that matches the triples it inserts on a single source', async() => {
+        // A store with live indexes, of which a lookup sees triples that are inserted while it runs
+        const store = RdfStore.createDefault();
+        for (let i = 0; i < 200; i++) {
+          store.addQuad(DF.quad(DF.namedNode(`ex:s${i}`), DF.namedNode('ex:p'), DF.namedNode(`ex:o${i}`)));
+        }
+
+        // The WHERE clause is evaluated before the insertion, so it does not match the inserted triples again
+        const result = <RDF.QueryVoid> await engine.query(`INSERT { ?o <ex:p> ?next }
+          WHERE { ?s <ex:p> ?o BIND(IRI(CONCAT(STR(?o), "x")) AS ?next) }`, {
+          sources: [ store ],
+        });
+        await result.execute();
+
+        expect(store.size).toBe(400);
+      });
+
       it('with insert where on two sources', async() => {
         // Prepare store
         const store = new Store([
