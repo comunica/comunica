@@ -274,6 +274,34 @@ describe('inScopeVariables', () => {
     // The templates of the delete-insert are still not traversed
     expect(inScopeVariables(deleteInsert)).toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('o') ]);
   });
+
+  it('returns the variables of nodes', () => {
+    expect(inScopeVariables(AF.createNodes(DF.variable('g'), DF.variable('n'))))
+      .toEqual([ DF.variable('g'), DF.variable('n') ]);
+    expect(inScopeVariables(AF.createNodes(DF.namedNode('ex:g'), DF.variable('n')))).toEqual([ DF.variable('n') ]);
+  });
+
+  it('returns the variables of distinct terms', () => {
+    const distinctTerms = AF.createDistinctTerms([ DF.variable('s'), DF.variable('g') ], { s: 'subject', g: 'graph' });
+
+    expect(inScopeVariables(distinctTerms)).toEqual([ DF.variable('s'), DF.variable('g') ]);
+  });
+
+  it('returns the variables of nodes nested in other operations once', () => {
+    const operation = AF.createMinus(
+      AF.createJoin([ pattern, AF.createNodes(DF.variable('g'), DF.variable('s')) ]),
+      AF.createNodes(DF.variable('g'), DF.variable('hidden')),
+    );
+
+    expect(inScopeVariables(operation))
+      .toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.variable('g') ]);
+  });
+
+  it('does not return the variables of nodes within a projection', () => {
+    const project = AF.createProject(AF.createNodes(DF.variable('g'), DF.variable('n')), [ DF.variable('n') ]);
+
+    expect(inScopeVariables(project)).toEqual([ DF.variable('n') ]);
+  });
 });
 
 describe('hasOperationType', () => {
