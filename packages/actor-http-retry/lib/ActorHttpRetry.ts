@@ -10,6 +10,8 @@ export class ActorHttpRetry extends ActorHttp {
   private readonly activeDelays: Record<string, { date: Date; timeout: NodeJS.Timeout }>;
   private readonly httpInvalidator: ActorHttpInvalidateListenable;
   private readonly mediatorHttp: MediatorHttp;
+  public readonly rateLimitRetryCount: number;
+  public readonly rateLimitRetryDelayFallback: number;
 
   // Expression that matches dates expressed in the HTTP Date header format
   // eslint-disable-next-line max-len
@@ -27,13 +29,15 @@ export class ActorHttpRetry extends ActorHttp {
     this.httpInvalidator = args.httpInvalidator;
     this.httpInvalidator.addInvalidateListener(action => this.handleHttpInvalidateEvent(action));
     this.mediatorHttp = args.mediatorHttp;
+    this.rateLimitRetryCount = args.rateLimitRetryCount;
+    this.rateLimitRetryDelayFallback = args.rateLimitRetryDelayFallback;
   }
 
   public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     if (action.context.has(ActorHttpRetry.keyWrapped)) {
       return failTest(`${this.name} can only wrap a request once`);
     }
-    const retryCount = action.context.get(KeysHttp.httpRetryCount);
+    const retryCount = action.context.get(KeysHttp.httpRetryCount) ?? this.rateLimitRetryCount;
     if (!retryCount || retryCount < 1) {
       return failTest(`${this.name} requires a retry count greater than zero to function`);
     }
@@ -41,6 +45,10 @@ export class ActorHttpRetry extends ActorHttp {
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+    if (action.context.get(KeysHttp.httpRetryCount) === undefined) {
+      return this.runRateLimitRetries(action);
+    }
+
     const url = ActorHttp.getInputUrl(action.input);
 
     // Attempt once + the number of retries specified by the user
@@ -52,9 +60,7 @@ export class ActorHttpRetry extends ActorHttp {
     let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= attemptLimit; attempt++) {
-      const retryDelay = url.host in this.activeDelays ?
-        this.activeDelays[url.host].date.getTime() - Date.now() :
-        retryDelayFallback;
+      const retryDelay = this.getRetryDelay(url, retryDelayFallback);
 
       if (retryDelayLimit && retryDelay > retryDelayLimit) {
         this.logWarn(action.context, 'Requested delay exceeds the limit', () => ({
@@ -121,37 +127,8 @@ export class ActorHttpRetry extends ActorHttp {
         continue;
       }
 
-      if (
-        // Status codes 429 (Too Many Requests) and 503 (Temporarily Unavailable) can have Retry-After
-        response.status === 429 || response.status === 503 ||
-        // DBPedia SPARQL endpoint uses 405 instead of 429 and sends a Retry-After with it to indicate rate limits
-        (response.status === 405 && response.headers.has('retry-after'))
-      ) {
-        const retryAfterHeader = response.headers.get('retry-after');
-
-        if (retryAfterHeader) {
-          const retryAfter = ActorHttpRetry.parseRetryAfterHeader(retryAfterHeader);
-          if (retryAfter) {
-            // Clear any previous clean-up timers for the host
-            if (url.host in this.activeDelays) {
-              clearTimeout(this.activeDelays[url.host].timeout);
-            }
-            // Record the current host-specific active delay, and add a clean-up timer for this new delay
-            this.activeDelays[url.host] = {
-              date: retryAfter,
-              timeout: setTimeout(() => delete this.activeDelays[url.host], retryAfter.getTime() - Date.now()),
-            };
-          } else {
-            this.logDebug(action.context, 'Invalid Retry-After header value from server', () => ({
-              url: url.href,
-              status: response.status,
-              statusText: response.statusText,
-              retryAfterHeader,
-              currentAttempt: `${attempt} / ${attemptLimit}`,
-            }));
-          }
-        }
-
+      if (ActorHttpRetry.isRateLimited(response)) {
+        this.recordRetryAfter(action, url, response, `${attempt} / ${attemptLimit}`);
         this.logDebug(action.context, 'Server temporarily unavailable', () => ({
           url: url.href,
           status: response.status,
@@ -198,6 +175,110 @@ export class ActorHttpRetry extends ActorHttp {
     }
 
     throw lastError ?? new Error(`Request failed: ${url.href}`);
+  }
+
+  /**
+   * Retry rate-limited requests, for when no retry count is set in the context.
+   * All other responses and errors are passed through unchanged,
+   * and so is the last rate-limited response once the retries are exhausted.
+   * @param {IActionHttp} action The HTTP action.
+   */
+  public async runRateLimitRetries(action: IActionHttp): Promise<IActorHttpOutput> {
+    const url = ActorHttp.getInputUrl(action.input);
+    const attemptLimit = this.rateLimitRetryCount + 1;
+    const retryDelayFallback = action.context.get(KeysHttp.httpRetryDelayFallback) ??
+      this.rateLimitRetryDelayFallback;
+    const retryDelayLimit = action.context.get(KeysHttp.httpRetryDelayLimit);
+    const replayable = ActorHttp.isReplayableRequestBody(action);
+
+    for (let attempt = 1; ; attempt++) {
+      const response = await this.mediatorHttp.mediate({
+        ...action,
+        context: action.context.set(ActorHttpRetry.keyWrapped, true),
+      });
+      if (!ActorHttpRetry.isRateLimited(response) || attempt === attemptLimit || !replayable) {
+        return response;
+      }
+
+      const currentAttempt = `${attempt} / ${attemptLimit}`;
+      this.recordRetryAfter(action, url, response, currentAttempt);
+      const retryDelay = this.getRetryDelay(url, retryDelayFallback);
+      if (retryDelayLimit && retryDelay > retryDelayLimit) {
+        this.logWarn(action.context, 'Requested delay exceeds the limit', () => ({
+          url: url.href,
+          delay: retryDelay,
+          delayLimit: retryDelayLimit,
+          currentAttempt,
+        }));
+        return response;
+      }
+
+      this.logDebug(action.context, 'Retrying rate-limited request', () => ({
+        url: url.href,
+        status: response.status,
+        statusText: response.statusText,
+        delay: retryDelay,
+        currentAttempt,
+      }));
+      await response.body?.cancel();
+      await ActorHttpRetry.sleep(retryDelay);
+    }
+  }
+
+  /**
+   * Check if the given response indicates that the server is rate-limiting or temporarily unavailable.
+   * @param {IActorHttpOutput} response An HTTP response.
+   */
+  public static isRateLimited(response: IActorHttpOutput): boolean {
+    // Status codes 429 (Too Many Requests) and 503 (Temporarily Unavailable) can have Retry-After
+    return response.status === 429 || response.status === 503 ||
+      // DBPedia SPARQL endpoint uses 405 instead of 429 and sends a Retry-After with it to indicate rate limits
+      (response.status === 405 && response.headers.has('retry-after'));
+  }
+
+  /**
+   * Record the delay requested by the Retry-After header of the given response for the host of the given URL.
+   * @param {IActionHttp} action The HTTP action.
+   * @param {URL} url The request URL.
+   * @param {IActorHttpOutput} response An HTTP response.
+   * @param {string} currentAttempt The current attempt, for logging.
+   */
+  protected recordRetryAfter(action: IActionHttp, url: URL, response: IActorHttpOutput, currentAttempt: string): void {
+    const retryAfterHeader = response.headers.get('retry-after');
+    if (!retryAfterHeader) {
+      return;
+    }
+    const retryAfter = ActorHttpRetry.parseRetryAfterHeader(retryAfterHeader);
+    if (retryAfter) {
+      // Clear any previous clean-up timers for the host
+      if (url.host in this.activeDelays) {
+        clearTimeout(this.activeDelays[url.host].timeout);
+      }
+      // Record the current host-specific active delay, and add a clean-up timer for this new delay
+      this.activeDelays[url.host] = {
+        date: retryAfter,
+        timeout: setTimeout(() => delete this.activeDelays[url.host], retryAfter.getTime() - Date.now()),
+      };
+    } else {
+      this.logDebug(action.context, 'Invalid Retry-After header value from server', () => ({
+        url: url.href,
+        status: response.status,
+        statusText: response.statusText,
+        retryAfterHeader,
+        currentAttempt,
+      }));
+    }
+  }
+
+  /**
+   * Determine how long to wait before sending a request to the host of the given URL.
+   * @param {URL} url The request URL.
+   * @param {number} retryDelayFallback The delay if the host did not request one.
+   */
+  protected getRetryDelay(url: URL, retryDelayFallback: number): number {
+    return url.host in this.activeDelays ?
+      this.activeDelays[url.host].date.getTime() - Date.now() :
+      retryDelayFallback;
   }
 
   /**
@@ -307,4 +388,19 @@ export interface IActorHttpQueueArgs extends IActorHttpArgs {
    */
   httpInvalidator: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */
+  /**
+   * The number of retries for rate-limited requests (status 429, 503, or 405 with a Retry-After header)
+   * if no retry count is set in the context.
+   * Other failed requests are only retried if a retry count is set in the context.
+   * @range {integer}
+   * @default {2}
+   */
+  rateLimitRetryCount: number;
+  /**
+   * The delay in milliseconds before retrying a rate-limited request without Retry-After header,
+   * if no retry count and retry delay fallback are set in the context.
+   * @range {integer}
+   * @default {1000}
+   */
+  rateLimitRetryDelayFallback: number;
 }
