@@ -33,6 +33,9 @@ async function fetchPatiently(url) {
     const response = await fetchOriginal(url);
     const body = await response.arrayBuffer();
     if (response.status !== 429 || pause === 0) {
+      if (!response.ok) {
+        failedStatuses[response.status] = (failedStatuses[response.status] ?? 0) + 1;
+      }
       return { response, body };
     }
     if (Date.now() >= pausedUntil) {
@@ -45,8 +48,12 @@ async function fetchPatiently(url) {
 }
 
 // The test suite runner requests a file again for every test that uses it as long as it is not cached, retries
-// right away when the rate of requests is limited, and reports every failed request as not found
-globalThis.fetch = async(input) => {
+// right away when the rate of requests is limited, and reports every failed request as not found.
+// Requests with options, such as another method or headers, are left as they are.
+globalThis.fetch = async(input, init) => {
+  if (init) {
+    return fetchOriginal(input, init);
+  }
   const url = String(input);
   if (!pending.has(url)) {
     pending.set(url, fetchPatiently(url));
@@ -54,7 +61,6 @@ globalThis.fetch = async(input) => {
   const { response, body } = await pending.get(url);
   if (!response.ok) {
     pending.delete(url);
-    failedStatuses[response.status] = (failedStatuses[response.status] ?? 0) + 1;
   }
   return new Response(body.byteLength > 0 ? body : null, response);
 };
