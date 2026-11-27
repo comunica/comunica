@@ -1760,6 +1760,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             'content-type': mediaType,
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+            'Cache-Control': 'max-age=3600',
+            Vary: 'Accept',
             'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
             Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
             'Accept-Query': 'application/sparql-query',
@@ -1817,6 +1819,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             'content-type': mediaType,
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+            'Cache-Control': 'max-age=3600',
+            Vary: 'Accept',
             'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
             Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
             'Accept-Query': 'application/sparql-query',
@@ -1863,6 +1867,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             'content-type': mediaType,
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+            'Cache-Control': 'max-age=3600',
+            Vary: 'Accept',
             'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
             Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
             'Accept-Query': 'application/sparql-query',
@@ -1900,6 +1906,37 @@ describe('HttpServiceSparqlEndpoint', () => {
         );
         expect(response.writeHead)
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+      });
+
+      describe('getServiceDescriptionCacheControl', () => {
+        it('should let clients reuse service descriptions without VoID', () => {
+          expect(instance.getServiceDescriptionCacheControl()).toBe('max-age=3600');
+        });
+
+        it('should let clients reuse service descriptions with computed VoID of read-only endpoints', () => {
+          const localInstance = new HttpServiceSparqlEndpoint({
+            ...argsDefault,
+            emitVoid: true,
+            context: { [KeysQueryOperation.readOnly.name]: true },
+          });
+          localInstance.voidMetadataEmitter.cachedStatistics = [ <any> {} ];
+          expect(localInstance.getServiceDescriptionCacheControl()).toBe('max-age=3600');
+        });
+
+        it('should not let clients reuse service descriptions with VoID that is not computed yet', () => {
+          const localInstance = new HttpServiceSparqlEndpoint({
+            ...argsDefault,
+            emitVoid: true,
+            context: { [KeysQueryOperation.readOnly.name]: true },
+          });
+          expect(localInstance.getServiceDescriptionCacheControl()).toBe('no-cache');
+        });
+
+        it('should not let clients reuse service descriptions with VoID of endpoints that allow updates', () => {
+          const localInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, emitVoid: true, context: {}});
+          localInstance.voidMetadataEmitter.cachedStatistics = [ <any> {} ];
+          expect(localInstance.getServiceDescriptionCacheControl()).toBe('no-cache');
+        });
       });
 
       describe('service description cache', () => {
@@ -2107,6 +2144,8 @@ describe('HttpServiceSparqlEndpoint', () => {
               'content-type': mediaType,
               'Access-Control-Allow-Origin': '*',
               'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+              'Cache-Control': 'no-cache',
+              Vary: 'Accept',
               'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
               Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
               'Accept-Query': 'application/sparql-query',
